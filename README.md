@@ -89,4 +89,4 @@ MIT
 Author Information
 ------------------
 
-Andrew J Huffman
+Andrew J. Huffman
