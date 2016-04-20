@@ -1,0 +1,10 @@
+---
+
+k8s_mst_packages:
+  - curl
+  - etcd
+  - kubernetes-master
+  - kubernetes-node
+
+cockpit_pkg: cockpit
+cockpit_kubernetes_pkg: cockpit-kubernetes

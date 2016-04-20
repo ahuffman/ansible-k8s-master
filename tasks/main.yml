@@ -1,0 +1,115 @@
+---
+
+#***install required packages
+- name: Ensure required kubernetes master packages are installed
+  yum: name='{{ item }}' state=latest
+  with_items: '{{ k8s_mst_packages }}'
+
+- name: Ensure cockpit is installed
+  yum: name='{{ cockpit_pkg }}' state=latest
+  when: k8s_cockpit == True
+  notify: Restart cockpit
+
+- name: Ensure cockpit-kubernetes is installed
+  yum: name='{{ cockpit_kubernetes_pkg }}' state=latest
+  when: k8s_cockpit == True
+  notify:
+    - Setup CentOS7-Extras Repository for cockpit-kubernetes
+    - Install cockpit-kubernetes
+    - Disable CentOS7-Extras Repository post cockpit-kubernetes install 
+    - Restart cockpit
+
+#****Configure general kubernetes settings
+#config
+- name: Configure kubernetes general settings
+  template: src=kubernetes/config.j2 dest=/etc/kubernetes/config
+  notify:
+    - Restart kube-scheduler
+    - Restart kube-controller-manager
+    - Restart kube-proxy
+    - Restart flanneld
+
+#scheduler
+- name: Configure kube-scheduler settings
+  template: src=kubernetes/scheduler.j2 dest=/etc/kubernetes/scheduler
+  notify: Restart kube-scheduler
+
+#controller-manager
+- name: Configure kube-controller-manager settings
+  template: src=kubernetes/controller-manager.j2 dest=/etc/kubernetes/controller-manager
+  notify: Restart kube-controller-manager
+
+#***Configure kubernetes apiserver settings
+- name: Configure kube-apiserver settings
+  template: src=kubernetes/apiserver.j2 dest=/etc/kubernetes/apiserver
+  notify: 
+    - Restart kube-apiserver
+    - Restart kube-scheduler
+    - Restart kube-controller-manager
+    - Restart kube-proxy
+    - Restart flanneld
+
+#***Enable and Startup core services
+
+#etcd
+- name: Enable and Start etcd service
+  service: name=etcd enabled=yes state=started
+
+#apiserver
+- name: Enable and Start kube-apiserver service
+  service: name=kube-apiserver enabled=yes state=started
+
+#controller-manager
+- name: Enable and Start kube-controller-manager service
+  service: name=kube-controller-manager enabled=yes state=started
+
+#scheduler
+- name: Enable and Start kube-scheduler service
+  service: name=kube-scheduler enabled=yes state=started
+
+#cockpit
+- name: Enable and Start cockpit service
+  service: name=cockpit.socket enabled=yes state=started
+  when: k8s_cockpit == True
+
+#***Setup flanneld backend network
+
+#check etcd key
+- name: Check to see if flanneld network config exists in etcd
+  command: /usr/bin/etcdctl ls '{{ etcd_key }}'/config
+  register: etcdctl_result
+  changed_when: "etcdctl_result.rc != 0"
+  notify: 
+    - Move flanneld network config to master
+    - Configure flanneld network in etcd
+    - Restart kube-proxy
+    - Restart flanneld
+
+#***Remaining Configuration
+#Configure local flannel settings
+- name: Configure local flanneld settings
+  template: src=sysconfig/flanneld.j2 dest=/etc/sysconfig/flanneld
+  when: k8s_mst_is_node == False
+
+#Configure kube-proxy
+- name: Configure kube-proxy
+  template: src=kubernetes/proxy.j2 dest=/etc/kubernetes/proxy
+  when: k8s_mst_is_node == False
+
+#***Remaining Services
+#Enable and startup flanneld
+- name: Enable flanneld service
+  service: name=flanneld enabled=yes
+  notify: Restart flanneld
+  when: k8s_mst_is_node == False
+
+#Enable and startup kube-proxy
+- name: Enable kube-proxy service
+  service: name=kube-proxy enabled=yes
+  notify: Restart kube-proxy
+  when: k8s_mst_is_node == False
+
+#docker - make sure disabled, when this is not a node
+- name: Ensure docker is not enabled
+  service: name=docker enabled=no state=stopped
+  when: k8s_mst_is_node == False

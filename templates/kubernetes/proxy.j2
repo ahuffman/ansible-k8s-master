@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+###
+# kubernetes proxy config
+
+# default config should be adequate
+
+# Add your own!
+KUBE_PROXY_ARGS="{% if k8s_kube_proxy_additional_args %}{{ k8s_kube_proxy_additional_args }}{% endif %}"

@@ -1,0 +1,61 @@
+---
+
+#Remediation of etcd key for flannel net: copy json file into place
+- name: Move flanneld network config to master
+  template: src=flannel/flanneld-conf.json.j2 dest=/etc/kubernetes/flanneld-conf.json
+
+#Remediation of etcd key for flannel net: curl the json into the etcd server
+- name: Configure flanneld network in etcd
+  command: /usr/bin/curl -L '{{ etcd_server_url }}':'{{ etcd_port }}'/v2/keys'{{ etcd_key }}'/config -XPUT --data-urlencode value@flanneld-conf.json
+  args:
+    chdir: /etc/kubernetes/
+
+#Remediation for Ensure cockpit-kubernetes
+- name: Setup CentOS7-Extras Repository for cockpit-kubernetes
+  yum_repository:
+    name: centos7-extras
+    description: CentOS7 - Extras
+    baseurl: http://mirror.centos.org/centos/7/extras/x86_64/
+    enabled: yes
+    gpgcheck: yes
+    gpgkey: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+    includepkgs: cockpit-kubernetes
+  when: k8s_cockpit == True
+
+- name: Install cockpit-kubernetes
+  yum: name='{{ cockpit_kubernetes_pkg }}' state=latest
+  when: k8s_cockpit == True
+
+- name: Disable CentOS7-Extras Repository post cockpit-kubernetes install
+  yum_repository:
+    name: centos7-extras
+    description: CentOS7 - Extras
+    baseurl: http://mirror.centos.org/centos/7/extras/x86_64/
+    enabled: no
+    gpgcheck: yes
+    gpgkey: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+    includepkgs: cockpit-kubernetes
+  when: k8s_cockpit == True
+
+
+#Service Restarts
+- name: Restart kube-scheduler
+  service: name=kube-scheduler state=restarted
+
+- name: Restart kube-controller-manager
+  service: name=kube-controller-manager state=restarted
+
+- name: Restart kube-proxy
+  service: name=kube-proxy state=restarted
+  when: k8s_mst_is_node == False
+
+- name: Restart flanneld
+  service: name=flanneld state=restarted
+  when: k8s_mst_is_node == False
+
+- name: Restart kube-apiserver
+  service: name=kube-apiserver state=restarted
+
+- name: Restart cockpit
+  service: name=cockpit state=restarted
+  when: k8s_cockpit == True
