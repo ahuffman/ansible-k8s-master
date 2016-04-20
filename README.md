@@ -1,4 +1,4 @@
-Role Name
+k8s-master
 =========
 
 An ansible role to configure a kubernetes master on a Red Hat Enterprise Linux based system.
