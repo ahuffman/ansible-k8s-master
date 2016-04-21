@@ -48,7 +48,7 @@ Role Variables
 * k8s_logtostderr: true
 
 ####install cockpit and kubernetes plugin?  
-*italic*Please note, this will rip out the default RHEL cockpit to be able to install the cockpit-kubernetes package and dependencies from the CentOS7 Extras repository
+****Please note, this will rip out the default RHEL cockpit to be able to install the cockpit-kubernetes package and dependencies from the CentOS7 Extras repository****
 * k8s_cockpit: true
 
 ####is the master also a node/minion?
