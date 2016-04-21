@@ -54,6 +54,9 @@ Role Variables
 ####is the master also a node/minion?
 * k8s_mst_is_node: false
 
+If you'd like to run a kubernetes node on your master, add the k8s-node role.
+The only extra variable you'll probably have to define is the kubelet_hostname_override: localhost and switch k8s_mst_is_node: true.
+
 ###Variables:
 * k8s_mst_packages:
     - curl
