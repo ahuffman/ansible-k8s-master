@@ -21,7 +21,7 @@ k8s_kube_proxy_additional_args: ''
 k8s_scheduler_additional_args: ''
 
 #etcd/flannel network settings
-etcd_server_url: http://kubernetes.local
+etcd_server_url: http://0.0.0.0
 etcd_port: 2379
 etcd_key: /kube01/network
 flannel_backend_network: 172.16.0.0/12

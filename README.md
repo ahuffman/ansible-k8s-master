@@ -34,7 +34,7 @@ Role Variables
 * k8s_scheduler_additional_args: ''
 
 ####etcd/flannel network settings
-* etcd_server_url: http://kubernetes.local
+* etcd_server_url: http://0.0.0.0
 * etcd_port: 2379
 * etcd_key: /kube01/network
 * flannel_backend_network: 172.16.0.0/12
@@ -47,7 +47,8 @@ Role Variables
 * k8s_log_level: 0
 * k8s_logtostderr: true
 
-####install cockpit and kubernetes plugin?
+####install cockpit and kubernetes plugin?  
+*italic*Please note, this will rip out the default RHEL cockpit to be able to install the cockpit-kubernetes package and dependencies from the CentOS7 Extras repository
 * k8s_cockpit: true
 
 ####is the master also a node/minion?
@@ -59,9 +60,21 @@ Role Variables
    - etcd
    - kubernetes-master
    - kubernetes-node
+   - flannel
 
-* cockpit_pkg: cockpit
-* cockpit_kubernetes_pkg: cockpit-kubernetes
+* cockpit_kubernetes_pkg: 
+    - cockpit-kubernetes
+    - cockpit
+
+####For ripping and replacing RHEL cockpit due to dependencies
+* cockpit_default:
+    - cockpit-shell
+    - cockpit-bridge
+    - cockpit-ws
+    - cockpit
+    - cockpit-networkmanager
+    - cockpit-storaged
+    - cockpit-docker
 
 
 Dependencies

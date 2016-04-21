@@ -1,14 +1,10 @@
 ---
 
-#Remediation of etcd key for flannel net: copy json file into place
-- name: Move flanneld network config to master
-  template: src=flannel/flanneld-conf.json.j2 dest=/etc/kubernetes/flanneld-conf.json
-
-#Remediation of etcd key for flannel net: curl the json into the etcd server
-- name: Configure flanneld network in etcd
-  command: /usr/bin/curl -L '{{ etcd_server_url }}':'{{ etcd_port }}'/v2/keys'{{ etcd_key }}'/config -XPUT --data-urlencode value@flanneld-conf.json
-  args:
-    chdir: /etc/kubernetes/
+#Remediation for install cockpit-kubernetes on RHEL system
+- name: Remove default cockpit packages
+  yum: name='{{ item }}' state=removed
+  with_items: '{{ cockpit_default }}'
+  when: k8s_cockpit == True
 
 #Remediation for Ensure cockpit-kubernetes
 - name: Setup CentOS7-Extras Repository for cockpit-kubernetes
@@ -19,11 +15,12 @@
     enabled: yes
     gpgcheck: yes
     gpgkey: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
-    includepkgs: cockpit-kubernetes
+    includepkgs: cockpit-kubernetes cockpit-shell cockpit-bridge cockpit cockpit-ws cockpit-networkmanager cockpit-storaged cockpit-docker
   when: k8s_cockpit == True
 
 - name: Install cockpit-kubernetes
-  yum: name='{{ cockpit_kubernetes_pkg }}' state=latest
+  yum: name='{{ item }}' state=latest
+  with_items: '{{ cockpit_kubernetes_pkg }}'
   when: k8s_cockpit == True
 
 - name: Disable CentOS7-Extras Repository post cockpit-kubernetes install
@@ -34,7 +31,7 @@
     enabled: no
     gpgcheck: yes
     gpgkey: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
-    includepkgs: cockpit-kubernetes
+    includepkgs: cockpit-kubernetes cockpit-shell cockpit-bridge cockpit cockpit-ws cockpit-networkmanager cockpit-storaged cockpit-docker
   when: k8s_cockpit == True
 
 
@@ -55,6 +52,10 @@
 
 - name: Restart kube-apiserver
   service: name=kube-apiserver state=restarted
+
+- name: Enable cockpit
+  service: name=cockpit.socket enabled=yes
+  when: k8s_cockpit == True
 
 - name: Restart cockpit
   service: name=cockpit state=restarted
