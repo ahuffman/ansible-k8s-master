@@ -56,11 +56,11 @@ Role Variables
 
 ###Variables:
 * k8s_mst_packages:
-   - curl
-   - etcd
-   - kubernetes-master
-   - kubernetes-node
-   - flannel
+    - curl
+    - etcd
+    - kubernetes-master
+    - kubernetes-node
+    - flannel
 
 * cockpit_kubernetes_pkg: 
     - cockpit-kubernetes
