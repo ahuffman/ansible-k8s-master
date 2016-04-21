@@ -24,7 +24,7 @@ Role Variables
 * k8s_auth_mode: ''
 * k8s_auth_policy_file: ''
 * k8s_token_auth_file: ''
-* k8s_apiserver_secure_port: ''
+* k8s_apiserver_secure_port: '0'
 * k8s_tls_cert_file: ''
 * k8s_tls_private_key_file: ''
 * k8s_client_ca_file: ''

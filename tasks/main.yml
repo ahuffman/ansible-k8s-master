@@ -80,20 +80,15 @@
   register: etcdctl_result
   changed_when: "etcdctl_result.rc != 0"
   ignore_errors: yes
+  notify:
+    - Configure flanneld network key in etcd
+    - Restart etcd
 
 - name: Move flanneld network config to master
   template: src=flannel/flanneld-conf.json.j2 dest=/etc/kubernetes/flanneld-conf.json
-
-- name: Configure flanneld network key in etcd
-  command: /usr/bin/curl -L '{{ etcd_server_url }}':'{{ etcd_port }}'/v2/keys'{{ etcd_key }}'/config -XPUT --data-urlencode value@flanneld-conf.json
-  args:
-    chdir: /etc/kubernetes/
   notify: 
+    - Configure flanneld network key in etcd
     - Restart etcd
-    - Restart kube-apiserver
-    - Restart kube-proxy
-    - Restart flanneld
-  when: "etcdctl_result.rc == 4"
 
 #***Remaining Configuration
 #Configure local flannel settings

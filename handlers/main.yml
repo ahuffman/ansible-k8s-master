@@ -18,6 +18,13 @@
     includepkgs: cockpit-kubernetes cockpit-shell cockpit-bridge cockpit cockpit-ws cockpit-networkmanager cockpit-storaged cockpit-docker
   when: k8s_cockpit == True
 
+- name: Configure flanneld network key in etcd
+  command: /usr/bin/curl -L '{{ etcd_server_url }}':'{{ etcd_port }}'/v2/keys'{{ etcd_key }}'/config -XPUT --data-urlencode value@flanneld-conf.json
+  args:
+    chdir: /etc/kubernetes/
+  when: "etcdctl_result.rc == 4"
+
+
 - name: Install cockpit-kubernetes
   yum: name='{{ item }}' state=latest
   with_items: '{{ cockpit_kubernetes_pkg }}'
