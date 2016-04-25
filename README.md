@@ -85,17 +85,30 @@ Dependencies
 
 N/A
 
-Example Playbook
+Example Playbooks
 ----------------
+Bare minimum, where 192.168.122.20 is the IP address of the desired master server.
 
     - hosts: kubernetes_master
       vars:
         k8s_etcd_urls: http://192.168.122.20:2379
-        etcd_server_url: http://192.168.122.20
-        etcd_key: /huffnet01/network
         k8s_master_url: http://192.168.122.20
       roles:
          - k8s-master
+
+Bare minimum while running a node on the master as well (applied k8s-node role) where 192.168.122.20 is the IP address of the desired master server:
+
+    - hosts: kubernetes_master
+      vars:
+        k8s_etcd_urls: http://192.168.122.20:2379
+        k8s_master_url: http://192.168.122.20
+        k8s_mst_is_node: true
+        #node settings 
+        kubelet_hostname_override: localhost
+      roles:
+        - k8s-master
+        - k8s-node
+
 
 License
 -------
