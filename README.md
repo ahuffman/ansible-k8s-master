@@ -96,7 +96,7 @@ Bare minimum, where 192.168.122.20 is the IP address of the desired master serve
       roles:
          - k8s-master
 
-Bare minimum while running a node on the master as well (applied k8s-node role) where 192.168.122.20 is the IP address of the desired master server:
+Bare minimum while running a node on the master as well (applied k8s-node role) where 192.168.122.20 is the IP address of the desired master server.
 
     - hosts: kubernetes_master
       vars:
