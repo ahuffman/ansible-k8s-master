@@ -6,6 +6,7 @@ k8s_mst_packages:
   - kubernetes-master
   - kubernetes-node
   - flannel
+  - openssl
 
 cockpit_kubernetes_pkg: 
   - cockpit-kubernetes
