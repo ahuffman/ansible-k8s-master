@@ -51,7 +51,7 @@
   register: apiserver_cert_path
 
 - name: Create kube-apiserver certificate path
-  file: path="{{ k8s_apiserver_cert_path }}" state=directory mode=600 group=kube owner=kube
+  file: path="{{ k8s_apiserver_cert_path }}" state=directory mode=655 group=root owner=kube
   when: "apiserver_cert_path.stat.exists != True"
 
 #Check presence of apiserver certificates
@@ -81,31 +81,40 @@
   shell: /usr/bin/openssl genrsa -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} 2048
   when: "apiserver_ca_key.stat.exists != True"
   notify:
-    - Fetch kube-apiserver CA key
+    - Fetch kube-apiserver Certificates and keys
 
 - name: Generate kube-apiserver CA certificate
-  shell: /usr/bin/openssl req -x509 -new -nodes -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -subj "/CN='{{ k8s_master_svc_ip }}'" -days 10000 -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}
+  shell: /usr/bin/openssl req -x509 -new -nodes -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -subj "/CN='{{ k8s_apiserver_listen_ip }}'" -days 10000 -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}
   when: "apiserver_ca_cert.stat.exists != True"
   notify:
-    - Fetch kube-apiserver CA certificate
+    - Fetch kube-apiserver Certificates and keys
 
 - name: Generate kube-apiserver server key
   shell: /usr/bin/openssl genrsa -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} 2048
   when: "apiserver_server_key.stat.exists != True"
   notify:
-    - Fetch kube-apiserver server key
+    - Fetch kube-apiserver Certificates and keys
 
 - name: Generate kube-apiserver server certificate signing request
-  shell: /usr/bin/openssl req -new -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} -subj "/CN='{{ k8s_master_svc_ip }}'" -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_csr_filename }}
+  shell: /usr/bin/openssl req -new -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} -subj "/CN='{{ k8s_apiserver_listen_ip }}'" -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_csr_filename }}
   when: "apiserver_server_csr.stat.exists != True"
   notify:
-    - Fetch kube-apiserver server certificate signing request
+    - Fetch kube-apiserver Certificates and keys
 
 - name: Generate kube-apiserver server certificate
   shell: /usr/bin/openssl x509 -req -in {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_csr_filename }} -CA {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -CAkey {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -CAcreateserial -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} -days 10000
   when: "apiserver_server_cert.stat.exists != True"
   notify:
-    - Fetch kube-apiserver server certificate
+    - Fetch kube-apiserver Certificates and keys
+
+- name: Ensure proper permissions on apiserver certificates
+  file: dest="{{  k8s_apiserver_cert_path }}/{{ item }}" mode=600 owner=kube group=root state=file
+  with_items:
+    - '{{ k8s_apiserver_ca_key_filename }}'
+    - '{{ k8s_apiserver_ca_cert_filename }}'
+    - '{{ k8s_apiserver_server_key_filename }}'
+    - '{{ k8s_apiserver_server_csr_filename }}'
+    - '{{ k8s_apiserver_server_cert_filename }}'
 
 #****************************************************************************************************
 
