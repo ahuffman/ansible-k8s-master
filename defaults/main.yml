@@ -3,7 +3,7 @@
 #kube-apiserver settings
 k8s_apiserver_cert_path: /etc/kubernetes/auth
 k8s_apiserver_ca_key_filename: ca.key
-k8s_apiserver_ca_cert_filename: ca.cert
+k8s_apiserver_ca_cert_filename: ca.crt
 k8s_apiserver_server_key_filename: server.key
 k8s_apiserver_server_csr_filename: server.csr
 k8s_apiserver_server_cert_filename: server.cert
