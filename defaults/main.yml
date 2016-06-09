@@ -20,10 +20,6 @@ k8s_auth_mode: ''
 k8s_auth_policy_file: ''
 k8s_token_auth_file: ''
 k8s_apiserver_secure_port: '6443'
-#changing next 3 to be replaced in apiserver settings at top
-#k8s_tls_cert_file: ''
-#k8s_tls_private_key_file: ''
-#k8s_client_ca_file: ''
 k8s_apiserver_additional_args: ''        #pass more apiserver switches here as a string
 k8s_controller_manager_additional_args: ''
 k8s_kube_proxy_additional_args: ''

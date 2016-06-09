@@ -6,28 +6,44 @@
 #
 
 # The address on the local server to listen to.
+{% if k8s_apiserver_listen_ip is defined %}
 KUBE_API_ADDRESS="--address={{ k8s_apiserver_listen_ip }}"
+{% else %}
+KUBE_API_ADDRESS="--address="
+{% endif %}
 
 # The port on the local server to listen on.
 # KUBE_API_PORT="--port=8080"
-{% if k8s_apiserver_port %}
+{% if k8s_apiserver_port is defined %}
 KUBE_API_PORT="--port={{ k8s_apiserver_port }}"
 {% endif %}
 
 # Port minions listen on
 # KUBELET_PORT="--kubelet_port=10250"
-{% if k8s_kubelet_port %}
+{% if k8s_kubelet_port is defined %}
 KUBELET_PORT="--kubelet_port={{ k8s_kubelet_port }}"
 {% endif %}
 
 # Comma separated list of nodes in the etcd cluster
+{% if k8s_etcd_urls is defined %}
 KUBE_ETCD_SERVERS="--etcd_servers={{ k8s_etcd_urls }}"
+{% else %}
+KUBE_ETCD_SERVERS="--etcd_servers="
+{% endif %}
 
 # Address range to use for services
+{% if k8s_service_network is defined %}
 KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range={{ k8s_service_network }}"
+{% else %}
+KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range="
+{% endif %}
 
 # default admission control policies
+{% if k8s_admission_control is defined %}
 KUBE_ADMISSION_CONTROL="--admission_control={{ k8s_admission_control }}"
+{% else %}
+KUBE_ADMISSION_CONTROL="--admission_control="
+{% endif %}
 
 # Add your own!
-KUBE_API_ARGS="{% if k8s_auth_mode %} --authorization_mode={{ k8s_auth_mode }}{% endif %}{% if k8s_auth_policy_file %} --authorization_policy_file={{ k8s_auth_policy_file }}{% endif %}{% if k8s_token_auth_file %} --token_auth_file={{ k8s_token_auth_file }}{% endif %}{% if k8s_apiserver_secure_port %} --secure-port={{ k8s_apiserver_secure_port }}{% endif %}{% if k8s_tls_cert_file %} --tls_cert_file={{ k8s_tls_cert_file }}{% endif %}{% if k8s_tls_private_key_file %} --tls_private_key_file={{ k8s_tls_private_key_file }}{% endif %}{% if k8s_client_ca_file %} --client_ca_file={{ k8s_client_ca_file }}{% endif %}{% if k8s_apiserver_additional_args %} {{ k8s_apiserver_additional_args }}{% endif %}"
+KUBE_API_ARGS="{% if k8s_auth_mode is defined %} --authorization_mode={{ k8s_auth_mode }}{% endif %}{% if k8s_auth_policy_file is defined %} --authorization_policy_file={{ k8s_auth_policy_file }}{% endif %}{% if k8s_token_auth_file is defined %} --token_auth_file={{ k8s_token_auth_file }}{% endif %}{% if k8s_apiserver_secure_port is defined %} --secure-port={{ k8s_apiserver_secure_port }}{% endif %}{% if k8s_apiserver_cert_path is defined and k8s_apiserver_server_cert_filename is defined %} --tls_cert_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }}{% endif %}{% if k8s_apiserver_cert_path is defined and k8s_apiserver_server_key_filename is defined %} --tls_private_key_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }}{% endif %}{% if k8s_apiserver_cert_path is defined and k8s_apiserver_ca_cert_filename is defined %} --client_ca_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}{% endif %}{% if k8s_apiserver_additional_args is defined %} {{ k8s_apiserver_additional_args }}{% endif %}"
