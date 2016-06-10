@@ -51,7 +51,7 @@
   register: apiserver_cert_path
 
 - name: Create kube-apiserver certificate path
-  file: path="{{ k8s_apiserver_cert_path }}" state=directory mode=655 group=root owner=kube
+  file: path="{{ k8s_apiserver_cert_path }}" state=directory mode=744 group=root owner=kube
   when: "apiserver_cert_path.stat.exists != True"
 
 #Check presence of apiserver certificates
@@ -108,7 +108,7 @@
     - Fetch kube-apiserver Certificates and keys
 
 - name: Ensure proper permissions on apiserver certificates
-  file: dest="{{  k8s_apiserver_cert_path }}/{{ item }}" mode=600 owner=kube group=root state=file
+  file: dest="{{  k8s_apiserver_cert_path }}/{{ item }}" mode=770 owner=kube group=root state=file
   with_items:
     - '{{ k8s_apiserver_ca_key_filename }}'
     - '{{ k8s_apiserver_ca_cert_filename }}'
