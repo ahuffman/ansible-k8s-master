@@ -1,0 +1,19 @@
+[req]
+req_extensions = v3_req
+distinguished_name = req_distinguished_name
+[req_distinguished_name]
+
+[v3_req]
+
+# Extensions to add to a certificate request
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+{% set count = 1 %}
+{% for name in k8s_apiserver_dns_names %}
+DNS.{{ count }} = {{ name }}
+{% set count = count +1 %}
+{% endfor %}
+IP.1 = {{ k8s_apiserver_listen_ip }}

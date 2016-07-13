@@ -8,6 +8,9 @@ k8s_apiserver_server_key_filename: server.key
 k8s_apiserver_server_csr_filename: server.csr
 k8s_apiserver_server_cert_filename: server.cert
 k8s_apiserver_listen_ip: '' #apiserver will listen and certificates will be generated for the ca and server off this
+#we'll generate certs with this variable, so list all the Subject Alternate Names the master will be known as here
+k8s_apiserver_dns_names:
+  - kubernetes.local
 k8s_apiserver_insecure_listen_ip: 0.0.0.0 
 k8s_apiserver_port: ''                   #default 8080 and commented out in conf
 k8s_kubelet_port: ''                     #default 10250 and commented out in conf
