@@ -87,7 +87,7 @@
     - Fetch kube-apiserver Certificates and keys
 
 - name: Generate kube-apiserver CA certificate
-  shell: /usr/bin/openssl req -x509 -new -nodes -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -subj "/CN='{{ k8s_apiserver_listen_ip }}'" -days 10000 -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -config /etc/kubernetes/auth/openssl.conf
+  shell: /usr/bin/openssl req -x509 -new -nodes -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -subj "/CN='{{ ansible_hostname }}'" -days 10000 -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -config /etc/kubernetes/auth/openssl.conf
   when: "apiserver_ca_cert.stat.exists != True"
   notify:
     - Fetch kube-apiserver Certificates and keys
