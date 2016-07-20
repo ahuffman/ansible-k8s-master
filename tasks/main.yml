@@ -16,7 +16,7 @@
     - Enable cockpit
     - Restart cockpit
 
-#****Configure general kubernetes settings
+#***Configure general kubernetes settings
 #config
 - name: Configure etcd settings
   template: src=etcd/etcd.conf.j2 dest=/etc/etcd/etcd.conf
@@ -44,7 +44,7 @@
   template: src=kubernetes/controller-manager.j2 dest=/etc/kubernetes/controller-manager
   notify: Restart kube-controller-manager
 
-#***************************************************************************************************
+#***Configure secured apiserver and services
 #Check presence of apiserver certificate path
 - name: Check for presence of kube-apiserver certificate path
   stat: path="{{ k8s_apiserver_cert_path }}"
@@ -77,55 +77,99 @@
 
 #Create openssl config
 - name: Create Custom OpenSSL Config for kubernetes master certificates
-  template: src=openssl/openssl.conf.j2 dest=/etc/kubernetes/auth/openssl.conf
+  template: src=openssl/openssl.conf.j2 dest={{ k8s_apiserver_cert_path }}/openssl.conf
 
 #Generate apiserver certificates ref: http://kubernetes.io/docs/admin/authentication/
 - name: Generate kube-apiserver CA key
-  shell: /usr/bin/openssl genrsa -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} 2048
+  shell: openssl genrsa -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} 2048
   when: "apiserver_ca_key.stat.exists != True"
   notify:
     - Fetch kube-apiserver Certificates and keys
+    - Restart kube-apiserver
+    - Restart kube-scheduler
+    - Restart kube-controller-manager
+    - Restart kube-proxy
 
 - name: Generate kube-apiserver CA certificate
-  shell: /usr/bin/openssl req -x509 -new -nodes -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -subj "/CN='{{ ansible_hostname }}'" -days 10000 -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -config /etc/kubernetes/auth/openssl.conf
+  shell: openssl req -x509 -new -nodes -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -subj "/CN={{ ansible_hostname }}" -days 10000 -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -config {{ k8s_apiserver_cert_path }}/openssl.conf
   when: "apiserver_ca_cert.stat.exists != True"
   notify:
     - Fetch kube-apiserver Certificates and keys
+    - Restart kube-apiserver
+    - Restart kube-scheduler
+    - Restart kube-controller-manager
+    - Restart kube-proxy
 
 - name: Generate kube-apiserver server key
-  shell: /usr/bin/openssl genrsa -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} 2048
+  shell: openssl genrsa -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} 2048
   when: "apiserver_server_key.stat.exists != True"
   notify:
     - Fetch kube-apiserver Certificates and keys
+    - Restart kube-apiserver
+    - Restart kube-scheduler
+    - Restart kube-controller-manager
+    - Restart kube-proxy
 
 - name: Generate kube-apiserver server certificate signing request
-  shell: /usr/bin/openssl req -new -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} -subj "/CN='{{ k8s_apiserver_listen_ip }}'" -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_csr_filename }}
+  shell: openssl req -new -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} -subj "/CN='{{ ansible_hostname }}'" -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_csr_filename }}
   when: "apiserver_server_csr.stat.exists != True"
   notify:
     - Fetch kube-apiserver Certificates and keys
+    - Restart kube-apiserver
+    - Restart kube-scheduler
+    - Restart kube-controller-manager
+    - Restart kube-proxy
 
 - name: Generate kube-apiserver server certificate
-  shell: /usr/bin/openssl x509 -req -in {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_csr_filename }} -CA {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -CAkey {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -CAcreateserial -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} -days 10000 -extensions v3_req -extfile /etc/kubernetes/auth/openssl.conf
+  shell: openssl x509 -req -in {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_csr_filename }} -CA {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -CAkey {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -CAcreateserial -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} -days 10000 -extensions v3_req -extfile /etc/kubernetes/auth/openssl.conf
   when: "apiserver_server_cert.stat.exists != True"
   notify:
     - Fetch kube-apiserver Certificates and keys
+    - Restart kube-apiserver
+    - Restart kube-scheduler
+    - Restart kube-controller-manager
+    - Restart kube-proxy
 
 - name: Ensure proper permissions on apiserver certificates
-  file: dest="{{  k8s_apiserver_cert_path }}/{{ item }}" mode=770 owner=kube group=root state=file
+  file: dest="{{  k8s_apiserver_cert_path }}/{{ item }}" mode=440 owner=kube group=root state=file
   with_items:
     - '{{ k8s_apiserver_ca_key_filename }}'
     - '{{ k8s_apiserver_ca_cert_filename }}'
     - '{{ k8s_apiserver_server_key_filename }}'
     - '{{ k8s_apiserver_server_csr_filename }}'
     - '{{ k8s_apiserver_server_cert_filename }}'
+  notify:
+    - Restart kube-apiserver
+    - Restart kube-scheduler
+    - Restart kube-controller-manager
+    - Restart flanneld
+    - Restart kube-proxy
 
-#****************************************************************************************************
+#***Configure kubernetes components with kubeconfigs
+#proxy
+- name: Configure kube-proxy with secure kubeconfig
+  template: src=kubernetes/proxy.kubeconfig.j2 dest=/etc/kubernetes/{{ k8s_proxy_kubeconfig_filename }}
+  notify:
+    - Restart flanneld
+    - Restart kube-proxy
+  when: k8s_mst_is_node == False
 
+#scheduler
+- name: Configure kube-scheduler with secure kubeconfig
+  template: src=kubernetes/scheduler.kubeconfig.j2 dest=/etc/kubernetes/{{ k8s_scheduler_kubeconfig_filename }}
+  notify:
+    - Restart kube-scheduler
+
+#controller-manager
+- name: Configure kube-controller-manager with secure kubeconfig
+  template: src=kubernetes/controller-manager.kubeconfig.j2 dest=/etc/kubernetes/{{ k8s_controller_manager_kubeconfig_filename }}
+  notify:
+    - Restart kube-controller-manager
 
 #***Configure kubernetes apiserver settings
 - name: Configure kube-apiserver settings
   template: src=kubernetes/apiserver.j2 dest=/etc/kubernetes/apiserver
-  notify: 
+  notify:
     - Restart kube-apiserver
     - Restart kube-scheduler
     - Restart kube-controller-manager
@@ -133,7 +177,6 @@
     - Restart flanneld
 
 #***Enable and Startup core services
-
 #etcd
 - name: Enable and Start etcd service
   service: name=etcd enabled=yes state=started
@@ -151,10 +194,9 @@
   service: name=kube-scheduler enabled=yes state=started
 
 #***Setup flanneld backend network
-
 #check etcd key
 - name: Check to see if flanneld network config exists in etcd
-  command: /usr/bin/etcdctl ls '{{ etcd_key }}'/config
+  command: etcdctl ls '{{ etcd_key }}'/config
   register: etcdctl_result
   changed_when: "etcdctl_result.rc != 0"
   ignore_errors: yes
@@ -173,11 +215,16 @@
 - name: Configure local flanneld settings
   template: src=sysconfig/flanneld.j2 dest=/etc/sysconfig/flanneld
   when: k8s_mst_is_node == False
+  notify: 
+    - Restart flanneld
 
 #Configure kube-proxy
 - name: Configure kube-proxy
   template: src=kubernetes/proxy.j2 dest=/etc/kubernetes/proxy
   when: k8s_mst_is_node == False
+  notify:
+    - Restart flanneld
+    - Restart kube-proxy
 
 #***Remaining Services
 #Enable and startup flanneld
@@ -192,7 +239,7 @@
   notify: Restart kube-proxy
   when: k8s_mst_is_node == False
 
-#docker - make sure disabled, when this is not a node
+#docker - make sure disabled, when master is not a node
 - name: Ensure docker is not enabled
   service: name=docker enabled=no state=stopped
   when: k8s_mst_is_node == False

@@ -74,6 +74,3 @@
   with_items:
     - '{{ k8s_apiserver_ca_key_filename }}'
     - '{{ k8s_apiserver_ca_cert_filename }}'
-    - '{{ k8s_apiserver_server_key_filename }}'
-    - '{{ k8s_apiserver_server_csr_filename }}'
-    - '{{ k8s_apiserver_server_cert_filename }}'

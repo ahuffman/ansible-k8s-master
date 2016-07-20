@@ -6,11 +6,7 @@
 #
 
 # The address on the local server to listen to.
-{% if k8s_apiserver_listen_ip %}
-KUBE_API_ADDRESS="--insecure-bind-address={{ k8s_apiserver_insecure_listen_ip }} --bind-address={{ k8s_apiserver_listen_ip }}"
-{% else %}
-KUBE_API_ADDRESS="--insecure-bind-address= --bind-address="
-{% endif %}
+KUBE_API_ADDRESS="--bind-address={{ ansible_default_ipv4.address }}"
 
 # The port on the local server to listen on.
 # KUBE_API_PORT="--port=8080"
@@ -46,4 +42,4 @@ KUBE_ADMISSION_CONTROL="--admission_control="
 {% endif %}
 
 # Add your own!
-KUBE_API_ARGS="{% if k8s_auth_mode %} --authorization_mode={{ k8s_auth_mode }}{% endif %}{% if k8s_auth_policy_file %} --authorization_policy_file={{ k8s_auth_policy_file }}{% endif %}{% if k8s_token_auth_file %} --token_auth_file={{ k8s_token_auth_file }}{% endif %}{% if k8s_apiserver_secure_port %} --secure-port={{ k8s_apiserver_secure_port }}{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_cert_filename %} --tls_cert_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }}{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_key_filename %} --tls_private_key_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }}{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_ca_cert_filename %} --client_ca_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}{% endif %}{% if k8s_apiserver_additional_args %} {{ k8s_apiserver_additional_args }}{% endif %}"
+KUBE_API_ARGS="{% if k8s_auth_mode %} --authorization_mode={{ k8s_auth_mode }}{% endif %}{% if k8s_auth_policy_file %} --authorization_policy_file={{ k8s_auth_policy_file }}{% endif %}{% if k8s_token_auth_file %} --token_auth_file={{ k8s_token_auth_file }}{% endif %}{% if k8s_apiserver_secure_port %} --secure-port={{ k8s_apiserver_secure_port }}{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_cert_filename %} --tls_cert_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }}{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_key_filename %} --tls_private_key_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }}{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_ca_cert_filename %} --client_ca_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_key_filename %} --service_account_key_file={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }}{% endif %}{% if k8s_apiserver_additional_args %} {{ k8s_apiserver_additional_args }}{% endif %}"
