@@ -11,11 +11,13 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
+{% if k8s_apiserver_dns_names is defined %}
 {% set dns_count = 1 %}
 {% for name in k8s_apiserver_dns_names %}
 DNS.{{ dns_count }} = {{ name }}
 {% set dns_count = dns_count +1 %}
 {% endfor %}
+{% endif %}
 IP.1 = {{ ansible_default_ipv4.address }}
 {% if k8s_apiserver_additional_ips is defined %}
 {% set ip_count = 2 %}
