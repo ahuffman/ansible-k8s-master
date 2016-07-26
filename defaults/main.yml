@@ -7,16 +7,23 @@ k8s_apiserver_ca_cert_filename: ca.crt
 k8s_apiserver_server_key_filename: server.key
 k8s_apiserver_server_csr_filename: server.csr
 k8s_apiserver_server_cert_filename: server.cert
-k8s_apiserver_listen_ip: '' #apiserver will listen and certificates will be generated for the ca and server off this
+k8s_proxy_kubeconfig_filename: proxy.kubeconfig
+k8s_scheduler_kubeconfig_filename: scheduler.kubeconfig
+k8s_controller_manager_kubeconfig_filename: controller-manager.kubeconfig
+
 #we'll generate certs with this variable, so list all the Subject Alternate Names the master will be known as here
-k8s_apiserver_dns_names:
-  - kubernetes.local
-k8s_apiserver_insecure_listen_ip: 0.0.0.0 
+k8s_apiserver_dns_names: 
+  - kubernetes
+  - kubernetes.default
+  - kubernetes.default.svc
+  - kubernetes.default.svc.cluster.local
+#we'll generate certs with this variable, so list any other ip's required to validate the certificate
+k8s_apiserver_additional_ips: []
 k8s_apiserver_port: ''                   #default 8080 and commented out in conf
 k8s_kubelet_port: ''                     #default 10250 and commented out in conf
 k8s_etcd_urls: 'http://kubernetes.local:2379' #can be comma separated list if clustered etcd setup
 k8s_service_network: 192.168.22.0/24
-k8s_admission_control: 'NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ResourceQuota'
+k8s_admission_control: 'NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota'
 
 #Optional advanced apiserver settings
 k8s_auth_mode: ''
@@ -36,7 +43,6 @@ flannel_backend_network: 172.16.0.0/12
 flannel_subnet_length: '24' #applies to kubernetes node backend subnet length
 
 #kubernetes general settings
-k8s_master_url: http://127.0.0.1
 k8s_master_port: 8080
 k8s_allow_privileged: false
 k8s_log_level: 0

@@ -70,7 +70,7 @@
 
 #Retrieve apiserver certificates
 - name: Fetch kube-apiserver Certificates and keys
-  fetch: src="{{ k8s_apiserver_cert_path }}/{{ item }}"  dest=/etc/ansible/files/k8s-master-certs/ validate_checksum=yes flat=yes
+  fetch: src="{{ k8s_apiserver_cert_path }}/{{ item }}"  dest=/etc/ansible/files/k8s-master-certs/{{ ansible_hostname }} validate_checksum=yes flat=yes
   with_items:
     - '{{ k8s_apiserver_ca_key_filename }}'
     - '{{ k8s_apiserver_ca_cert_filename }}'
