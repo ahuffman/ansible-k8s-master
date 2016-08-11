@@ -1,5 +1,6 @@
 ---
 
+#**************Cockpit****************
 #Remediation for install cockpit-kubernetes on RHEL system
 - name: Remove default cockpit packages
   yum: name='{{ item }}' state=removed
@@ -18,13 +19,6 @@
     includepkgs: cockpit-kubernetes cockpit-shell cockpit-bridge cockpit cockpit-ws cockpit-networkmanager cockpit-storaged cockpit-docker
   when: k8s_cockpit == True
 
-- name: Configure flanneld network key in etcd
-  command: /usr/bin/curl -L '{{ etcd_server_url }}':'{{ etcd_port }}'/v2/keys'{{ etcd_key }}'/config -XPUT --data-urlencode value@flanneld-conf.json
-  args:
-    chdir: /etc/kubernetes/
-  when: "etcdctl_result.rc == 4"
-
-
 - name: Install cockpit-kubernetes
   yum: name='{{ item }}' state=latest
   with_items: '{{ cockpit_kubernetes_pkg }}'
@@ -42,6 +36,15 @@
   when: k8s_cockpit == True
 
 
+#***************flannel-etcd******************
+- name: Configure flanneld network key in etcd
+  command: /usr/bin/curl -L '{{ etcd_server_url }}':'{{ etcd_port }}'/v2/keys'{{ etcd_key }}'/config -XPUT --data-urlencode value@flanneld-conf.json
+  args:
+    chdir: /etc/kubernetes/
+  when: "etcdctl_result.rc == 4"
+
+
+#*****************Services*********************
 #Service Restarts
 - name: Restart kube-scheduler
   service: name=kube-scheduler state=restarted
@@ -68,6 +71,7 @@
   service: name=cockpit state=restarted
   when: k8s_cockpit == True
 
+#******************CA*************************
 #Retrieve apiserver certificates
 - name: Fetch kube-apiserver Certificates and keys
   fetch: src="{{ k8s_apiserver_cert_path }}/{{ item }}"  dest=/etc/ansible/files/k8s-master-certs/{{ ansible_hostname }}/ validate_checksum=yes flat=yes

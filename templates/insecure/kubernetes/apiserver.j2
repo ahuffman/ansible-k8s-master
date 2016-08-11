@@ -1,0 +1,33 @@
+# {{ ansible_managed }}
+###
+# kubernetes system config
+#
+# The following values are used to configure the kube-apiserver
+#
+
+# The address on the local server to listen to.
+KUBE_API_ADDRESS="--address={{ k8s_apiserver_listen_ip }}"
+
+# The port on the local server to listen on.
+# KUBE_API_PORT="--port=8080"
+{% if k8s_apiserver_insecure_port %}
+KUBE_API_PORT="--insecure-port={{ k8s_apiserver_insecure_port }}"
+{% endif %}
+
+# Port minions listen on
+# KUBELET_PORT="--kubelet_port=10250"
+{% if k8s_kubelet_port %}
+KUBELET_PORT="--kubelet_port={{ k8s_kubelet_port }}"
+{% endif %}
+
+# Comma separated list of nodes in the etcd cluster
+KUBE_ETCD_SERVERS="--etcd_servers={{ k8s_etcd_urls }}"
+
+# Address range to use for services
+KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range={{ k8s_service_network }}"
+
+# default admission control policies
+KUBE_ADMISSION_CONTROL="--admission_control={{ k8s_admission_control }}"
+
+# Add your own!
+KUBE_API_ARGS="{% if k8s_auth_mode %} --authorization_mode={{ k8s_auth_mode }}{% endif %}{% if k8s_auth_policy_file %} --authorization_policy_file={{ k8s_auth_policy_file }}{% endif %}{% if k8s_token_auth_file %} --token_auth_file={{ k8s_token_auth_file }}{% endif %}{% if k8s_apiserver_additional_args %} {{ k8s_apiserver_additional_args }}{% endif %}"

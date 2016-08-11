@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+###
+# kubernetes scheduler config
+
+# default config should be adequate
+
+# Add your own!
+KUBE_SCHEDULER_ARGS="{% if k8s_scheduler_additional_args %}{{ k8s_scheduler_additional_args }}{% endif %}"

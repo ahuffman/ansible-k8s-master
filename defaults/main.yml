@@ -1,7 +1,49 @@
 ---
+#Variables that apply to how this role will operate
+
+#install cockpit and kubernetes plugin?
+k8s_cockpit: true
+
+#is the master also a node/minion?
+#for compatibility with k8s-node role: https://galaxy.ansible.com/ahuffman/k8s-node
+k8s_mst_is_node: false
+
+#Deploy secure cluster or insecure?
+k8s_secure_master: true
+
+#etcd/flannel network settings
+
+etcd_server_url: http://0.0.0.0
+etcd_port: 2379
+etcd_key: /kube01/network
+flannel_backend_network: 172.16.0.0/12
+flannel_subnet_length: '24' #applies to kubernetes node backend subnet length
+
 
 #kube-apiserver settings
-k8s_apiserver_cert_path: /etc/kubernetes/auth
+k8s_kubelet_port: ''                     #default 10250 and commented out in conf
+k8s_etcd_urls: 'http://kubernetes.local:2379' #can be comma separated list if clustered etcd setup
+k8s_service_network: 192.168.22.0/24     #Network range to serve kubernetes services on
+k8s_admission_control: 'NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota'
+
+#Optional advanced apiserver settings
+k8s_auth_mode: ''
+k8s_auth_policy_file: ''
+k8s_token_auth_file: ''
+k8s_apiserver_additional_args: ''        #pass more apiserver switches here as a string
+k8s_controller_manager_additional_args: ''
+k8s_kube_proxy_additional_args: ''
+k8s_scheduler_additional_args: ''
+
+#kubernetes general settings
+k8s_apiserver_insecure_port: 8080
+k8s_allow_privileged: false
+k8s_log_level: 0
+k8s_logtostderr: true
+
+#Variables that apply to a secure kubernetes cluster
+k8s_apiserver_secure_port: '6443'
+k8s_apiserver_cert_path: /etc/kubernetes/certs
 k8s_apiserver_ca_key_filename: ca.key
 k8s_apiserver_ca_cert_filename: ca.crt
 k8s_apiserver_server_key_filename: server.key
@@ -10,46 +52,14 @@ k8s_apiserver_server_cert_filename: server.cert
 k8s_proxy_kubeconfig_filename: proxy.kubeconfig
 k8s_scheduler_kubeconfig_filename: scheduler.kubeconfig
 k8s_controller_manager_kubeconfig_filename: controller-manager.kubeconfig
-
-#we'll generate certs with this variable, so list all the Subject Alternate Names the master will be known as here
-k8s_apiserver_dns_names: 
+#we'll generate certs with this variable.
+#Override this variable list all the Subject Alternate Names the master will be known as
+k8s_apiserver_dns_names:
   - kubernetes
   - kubernetes.default
   - kubernetes.default.svc
   - kubernetes.default.svc.cluster.local
-#we'll generate certs with this variable, so list any other ip's required to validate the certificate
+#we'll generate certs with this variable.
+#Override this list with any other ip's required to validate the certificate
+#openssl.conf.j2 template grabs ansible_default_ipv4.address by default.  Add any other IPs you'll serve on
 k8s_apiserver_additional_ips: []
-k8s_apiserver_port: ''                   #default 8080 and commented out in conf
-k8s_kubelet_port: ''                     #default 10250 and commented out in conf
-k8s_etcd_urls: 'http://kubernetes.local:2379' #can be comma separated list if clustered etcd setup
-k8s_service_network: 192.168.22.0/24
-k8s_admission_control: 'NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota'
-
-#Optional advanced apiserver settings
-k8s_auth_mode: ''
-k8s_auth_policy_file: ''
-k8s_token_auth_file: ''
-k8s_apiserver_secure_port: '6443'
-k8s_apiserver_additional_args: ''        #pass more apiserver switches here as a string
-k8s_controller_manager_additional_args: ''
-k8s_kube_proxy_additional_args: ''
-k8s_scheduler_additional_args: ''
-
-#etcd/flannel network settings
-etcd_server_url: http://0.0.0.0
-etcd_port: 2379
-etcd_key: /kube01/network
-flannel_backend_network: 172.16.0.0/12
-flannel_subnet_length: '24' #applies to kubernetes node backend subnet length
-
-#kubernetes general settings
-k8s_master_port: 8080
-k8s_allow_privileged: false
-k8s_log_level: 0
-k8s_logtostderr: true
-
-#install cockpit and kubernetes plugin?
-k8s_cockpit: true
-
-#is the master also a node/minion?
-k8s_mst_is_node: false
