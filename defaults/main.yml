@@ -8,7 +8,8 @@ k8s_cockpit: true
 k8s_mst_is_node: false
 
 #Deploy secure cluster or insecure?
-k8s_secure_master: true
+k8s_secure_master: false  
+#set to false to ensure we don't hurt any v1.x role users upgrading to this ver.
 
 
 #*****etcd/flannel network settings******
