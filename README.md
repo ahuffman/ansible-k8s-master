@@ -70,28 +70,27 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 ### Variables:
 Found in [`vars/main.yml`](vars/main.yml)
 
-`k8s_mst_packages`:
-  - curl
-  - etcd
-  - kubernetes-master
-  - kubernetes-node
-  - flannel
-  - openssl #for certificate generation
+     `k8s_mst_packages`:
+        - curl
+        - etcd
+        - kubernetes-master
+        - kubernetes-node
+        - flannel
+        - openssl #for certificate generation
 
-`cockpit_kubernetes_pkg`: 
-  - cockpit-kubernetes
-  - cockpit
+     `cockpit_kubernetes_pkg`: 
+        - cockpit-kubernetes
+        - cockpit
 
-For ripping and replacing RHEL cockpit due to dependencies
-
-`cockpit_default`:
-  - cockpit-shell
-  - cockpit-bridge
-  - cockpit-ws
-  - cockpit
-  - cockpit-networkmanager
-  - cockpit-storaged
-  - cockpit-docker
+For ripping and replacing RHEL cockpit due to dependencies:   
+     `cockpit_default`:
+        - cockpit-shell
+        - cockpit-bridge
+        - cockpit-ws
+        - cockpit
+        - cockpit-networkmanager
+        - cockpit-storaged
+        - cockpit-docker
 
 
 Dependencies
