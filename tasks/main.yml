@@ -1,4 +1,5 @@
 ---
+#Choose your own adventure
 - name: Include appropriate tasks for Secure Cluster Configuration
   include: tasks/secure.yml
   when: k8s_secure_master == True
