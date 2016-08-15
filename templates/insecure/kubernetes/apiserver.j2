@@ -6,7 +6,7 @@
 #
 
 # The address on the local server to listen to.
-KUBE_API_ADDRESS="--address={{ k8s_apiserver_listen_ip }}"
+KUBE_API_ADDRESS="--bind-address={{ ansible_default_ipv4.address }}"
 
 # The port on the local server to listen on.
 # KUBE_API_PORT="--port=8080"
