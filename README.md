@@ -13,14 +13,14 @@ If the kubernetes master will also be a cluster member (node/minion), you will w
 ### Defaults:
 Found in [`defaults/main.yml`](defaults/main.yml)
 
-#### kube-apiserver settings
+#### Kube-apiserver Settings
 `k8s_cockpit`: true - Required if you'd like cockpit and the cockpit-kubernetes plugin to be installed
 
 `k8s_mst_is_node`: false - Change to `true` if you plan on making the master a cluster member (node/minion) as well.  You'll also need to make use of the [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role to properly configure your node.
 
 `k8s_secure_master`: false - Change to `true` if you'd like to generate certificates and communicate over secured channels.
 
-#### etcd/flannel network settings
+#### Etcd/flannel Network Settings
 `etcd_server_url`: http://0.0.0.0 - The URL of your etcd server.  By default, this role configures etcd on your kubernetes master so you won't need to change this in most cases.
 
 `etcd_port`: 2379 - The port of your etcd server.  As mentioned above, you most likely won't need to change this setting.
@@ -32,7 +32,7 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 `flannel_subnet_length`: '24' - The kubernetes node backend subnet length (i.e. The size of network slices assigned to kubernetes nodes.)
 
 
-#### kube-apiserver settings
+#### Kube-apiserver Settings
 `k8s_kubelet_port`: '' - The port on which kubernetes kubelets are expected to communicate with the apiserver on.  Blank means the kube-apiserver default of 10250 will be used.
 
 `k8s_etcd_urls`: 'http://kubernetes.local:2379'  - Modify this setting with your host's DNS name as required.
@@ -41,7 +41,7 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 
 `k8s_admission_control`: 'NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota' - Modify this if you wish to not use one of the default kubernetes admission controllers.
 
-#### Optional advanced kube-apiserver settings
+#### Optional Advanced kube-apiserver Settings
 `k8s_auth_mode`: '' - Use this setting to apply one of the authorization modes to the apiserver's configuration.
 
 `k8s_auth_policy_file`: '' - The location of your authorization method's policy file.
@@ -56,7 +56,7 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 
 `k8s_scheduler_additional_args`: - Any additional kube-scheduler options you wish to apply to the kube-scheduler service.  See `man kube-scheduler` for all available options.
 
-#### kubernetes general settings
+#### Kubernetes General Settings
 `k8s_apiserver_insecure_port`: 8080 - The port where insecure communication with the kube-apiserver will take place.
 
 `k8s_allow_privileged`: false - Whether or not to allow the execution of privileged containers.
@@ -65,7 +65,7 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 
 `k8s_logtostderr`: true - Whether or not to log to standard error.
 
-#### secure kube-apiserver settings - only apply if `k8s_secure_master: true`.
+#### Secure kube-apiserver Settings - only apply if `k8s_secure_master: true`.
 `k8s_apiserver_secure_port`: 6443 - Port to server kube-apiserver secured communications.
 
 `k8s_apiserver_cert_path`: /etc/kubernetes/certs - Where to store the server's certificates and keys.
@@ -111,7 +111,8 @@ Found in [`vars/main.yml`](vars/main.yml)
   - cockpit-kubernetes
   - cockpit
 
-#### For ripping and replacing RHEL cockpit due to dependencies
+For ripping and replacing RHEL cockpit due to dependencies
+
 `cockpit_default`:
   - cockpit-shell
   - cockpit-bridge
