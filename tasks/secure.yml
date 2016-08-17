@@ -121,7 +121,7 @@
     - Restart kube-proxy
 
 - name: Generate kube-apiserver server certificate
-  shell: openssl x509 -req -in {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_csr_filename }} -CA {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -CAkey {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -CAcreateserial -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} -days 10000 -extensions v3_req -extfile /etc/kubernetes/auth/openssl.conf
+  shell: openssl x509 -req -in {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_csr_filename }} -CA {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -CAkey {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -CAcreateserial -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} -days 10000 -extensions v3_req -extfile {{ k8s_apiserver_cert_path }}/openssl.conf
   when: "apiserver_server_cert.stat.exists != True"
   notify:
     - Fetch kube-apiserver Certificates and keys
