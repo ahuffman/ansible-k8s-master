@@ -6,7 +6,7 @@
 #
 
 # The address on the local server to listen to.
-KUBE_API_ADDRESS="--bind-address={{ ansible_default_ipv4.address }}"
+KUBE_API_ADDRESS="--insecure-bind-address=0.0.0.0"
 
 # The port on the local server to listen on.
 # KUBE_API_PORT="--port=8080"
@@ -30,4 +30,4 @@ KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range={{ k8s_service_network }}"
 KUBE_ADMISSION_CONTROL="--admission_control={{ k8s_admission_control }}"
 
 # Add your own!
-KUBE_API_ARGS="{% if k8s_auth_mode %} --authorization_mode={{ k8s_auth_mode }}{% endif %}{% if k8s_auth_policy_file %} --authorization_policy_file={{ k8s_auth_policy_file }}{% endif %}{% if k8s_token_auth_file %} --token_auth_file={{ k8s_token_auth_file }}{% endif %}{% if k8s_apiserver_additional_args %} {{ k8s_apiserver_additional_args }}{% endif %}"
+KUBE_API_ARGS="{% if k8s_secure_master == False %}--secure-port=0{% endif %}{% if k8s_auth_mode %} --authorization_mode={{ k8s_auth_mode }}{% endif %}{% if k8s_auth_policy_file %} --authorization_policy_file={{ k8s_auth_policy_file }}{% endif %}{% if k8s_token_auth_file %} --token_auth_file={{ k8s_token_auth_file }}{% endif %}{% if k8s_apiserver_additional_args %} {{ k8s_apiserver_additional_args }}{% endif %}"
