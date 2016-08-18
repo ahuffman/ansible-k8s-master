@@ -160,7 +160,7 @@ Example Playbooks
           - foobar01.foobar.org
           - foobar
           - foobar.foobar.org
-        #k8s-node settings see [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) for more details on settings
+        #k8s-node settings see k8s-node - https://galaxy.ansible.com/ahuffman/k8s-node/ for more details on settings
         k8s_secure_node: true
         k8s_master_hostname: kubmst01 #short hostname of master that matches ansible_hostname
         etcd_server_url: http://192.168.122.20
