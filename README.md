@@ -8,6 +8,8 @@ This role can deploy either a SSL Secured kubernetes master (kube-apiserver) or 
 
 If the kubernetes master will also be a cluster member (node/minion), you will want to make use of the [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role.
 
+If you have problems connecting your nodes to your newly deployed kubernetes master, or Cockpit on the master, ensure that you have the appropriate firewall ports opened for all related services.  You may want to consider making use of an Ansible role to manage the firewall ports as required.
+
 ## Role Variables
 
 ### Defaults:
@@ -106,7 +108,6 @@ Example Playbooks
     - hosts: kubernetes_master
       vars:
         k8s_etcd_urls: http://192.168.122.20:2379
-        k8s_master_url: http://192.168.122.20
       roles:
          - k8s-master
 
@@ -114,11 +115,11 @@ Example Playbooks
 
     - hosts: kubernetes_master
       vars:
-        k8s_etcd_urls: http://192.168.122.20:2379
-        k8s_master_url: http://192.168.122.20
         k8s_mst_is_node: true
-        #node settings 
-        kubelet_hostname_override: localhost
+        k8s_etcd_urls: http://192.168.122.20:2379
+        #node settings
+        k8s_master_hostname: kubmst01 #short hostname of master that matches ansible_hostname
+        etcd_server_url: http://192.168.122.20
       roles:
         - k8s-master
         - k8s-node
@@ -129,7 +130,6 @@ Example Playbooks
       vars:
         k8s_secure_master: true
         k8s_etcd_urls: http://192.168.122.20:2379
-        k8s_master_url: http://192.168.122.20
         k8s_apiserver_dns_names:
           - kubernetes
           - kubernetes.default
@@ -140,10 +140,33 @@ Example Playbooks
           - foobar01.foobar.org
           - foobar
           - foobar.foobar.org
+      roles:
+        - k8s-master
 
-### Secured kubernetes master, running a node on the master as well (applied k8s-node role) where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
+### Secured kubernetes master, running a secured node on the master as well (applied [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role) where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
 
-      Will write this once the k8s-node secure work is completed.
+    - hosts: kubernetes_master
+      vars:
+        k8s_secure_master: true
+        k8s_mst_is_node: true
+        k8s_etcd_urls: http://192.168.122.20:2379
+        k8s_apiserver_dns_names:
+          - kubernetes
+          - kubernetes.default
+          - kubernetes.default.svc
+          - kubernetes.default.svc.cluster.local
+          #Adding additional SANs
+          - foobar01
+          - foobar01.foobar.org
+          - foobar
+          - foobar.foobar.org
+        #k8s-node settings see [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) for more details on settings
+        k8s_secure_node: true
+        k8s_master_hostname: kubmst01 #short hostname of master that matches ansible_hostname
+        etcd_server_url: http://192.168.122.20
+      roles:
+        - k8s-master
+        - k8s-node
 
 
 License
