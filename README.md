@@ -19,7 +19,7 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 `k8s_secure_master`: false - Change to `true` if you'd like to generate certificates and communicate over secured channels.   
 
 #### Etcd/flannel Network Settings:
-`etcd_server_url`: http://0.0.0.0 - The URL of your etcd server.  By default, this role configures etcd on your kubernetes master so you won't need to change this in most cases.   
+`etcd_service_url`: http://0.0.0.0 - The URL of your etcd server, minus the port.  By default, this role configures etcd on your kubernetes master so you won't need to change this in most cases.  The port is specified in `etcd_port`.   
 `etcd_port`: 2379 - The port of your etcd server.  As mentioned above, you most likely won't need to change this setting.   
 `etcd_key`: /kube01/network - The key where your cluster's network settings will be stored in etcd.  Change as needed per cluster.   
 `flannel_backend_network`: 172.16.0.0/12 - The network for backend pod/kube-proxy communications.   
