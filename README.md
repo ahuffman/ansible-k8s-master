@@ -29,7 +29,7 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 
 #### Kube-apiserver Settings:
 `k8s_kubelet_port`: '' - The port on which kubernetes kubelets are expected to communicate with the apiserver on.  Blank means the kube-apiserver default of 10250 will be used.   
-`k8s_etcd_urls`: 'http://kubernetes.local:2379'  - Modify this setting with your host's DNS name as required.   
+`k8s_etcd_urls`: 'http://kubernetes.local:2379'  - Modify this setting with your host's DNS name/IP as required.   
 `k8s_service_network`: 192.168.22.0/24 - Modify this setting to define what range of IPs your deployed kubernetes services will serve on.   
 `k8s_admission_control`: 'NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota' - Modify this if you wish to not use one of the default kubernetes admission controllers.   
 
