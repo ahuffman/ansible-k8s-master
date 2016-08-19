@@ -1,0 +1,14 @@
+---
+- name: Enable Kubernetes Services in firewalld - Secure
+  firewalld: port='{{ item }}' permanent=true state=enabled zone=public immediate=yes
+  with_items: '{{ k8s_firewall_ports_secure }}'
+  when: k8s_secure_master == True
+
+- name: Enable Kubernetes Services in firewalld - Insecure
+  firewalld: port='{{ item }}' permanent=true state=enabled zone=public immediate=yes
+  with_items: '{{ k8s_firewall_ports_insecure }}'
+  when: k8s_secure_master == False
+
+- name: Enable Cockpit Service in firewalld
+  firewalld: service=cockpit permanent=true state=enabled zone=public immediate=yes
+  when: k8s_cockpit == True

@@ -11,6 +11,8 @@ k8s_mst_is_node: false
 k8s_secure_master: false  
 #set to false to ensure we don't hurt any v1.x role users upgrading to this ver.
 
+#Open firewall ports with firewalld?
+k8s_firewalld: true
 
 #*****etcd/flannel network settings******
 etcd_service_url: http://0.0.0.0
@@ -21,7 +23,7 @@ flannel_subnet_length: '24' #applies to kubernetes node backend subnet length
 
 
 #*****kube-apiserver settings*****
-k8s_kubelet_port: ''                     #default 10250 and commented out in conf
+k8s_kubelet_port: '10250'   #default 10250 and usually commented out in config
 k8s_etcd_urls: 'http://kubernetes.local:2379' #can be comma separated list if clustered etcd setup
 k8s_service_network: 192.168.22.0/24     #Network range to serve kubernetes services on
 k8s_admission_control: 'NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota'

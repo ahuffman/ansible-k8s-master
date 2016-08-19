@@ -2,7 +2,7 @@
 
 An ansible role to configure a kubernetes master on a Red Hat Enterprise Linux based system.
 
-This role can deploy either a SSL Secured kubernetes master (kube-apiserver) or an insecured kubernetes master.  See example playbooks for the minimum required variables to deploy a cluster in a insecure or secure fashion.
+This role can deploy either a SSL Secured kubernetes master (kube-apiserver) or an insecured kubernetes master.  See example playbooks for the minimum required variables to deploy a cluster in a insecure or secure fashion.  It will also open the required system firewall ports with firewalld (default RHEL7/CentOS7).
 
 ## Requirements
 
@@ -19,6 +19,7 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 `k8s_cockpit`: true - Required if you'd like cockpit and the cockpit-kubernetes plugin to be installed   
 `k8s_mst_is_node`: false - Change to `true` if you plan on making the master a cluster member (node/minion) as well.  You'll also need to make use of the [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role to properly configure your node.   
 `k8s_secure_master`: false - Change to `true` if you'd like to generate certificates and communicate over secured channels.   
+`k8s_firewalld`: true - Whether or not to open the required firewall ports with firewalld.  If you're managing your system's firewall ports outside of this role, set to false.   
 
 #### Etcd/flannel Network Settings:
 `etcd_service_url`: http://0.0.0.0 - The URL of your etcd server, minus the port.  By default, this role configures etcd on your kubernetes master so you won't need to change this in most cases.  The port is specified in `etcd_port`.   
@@ -28,7 +29,7 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 `flannel_subnet_length`: '24' - The kubernetes node backend subnet length (i.e. The size of network slices assigned to kubernetes nodes.)   
 
 #### Kube-apiserver Settings:
-`k8s_kubelet_port`: '' - The port on which kubernetes kubelets are expected to communicate with the apiserver on.  Blank means the kube-apiserver default of 10250 will be used.   
+`k8s_kubelet_port`: '10250' - The port on which kubernetes kubelets are expected to communicate with the apiserver.   
 `k8s_etcd_urls`: 'http://kubernetes.local:2379'  - Modify this setting with your host's DNS name/IP as required.   
 `k8s_service_network`: 192.168.22.0/24 - Modify this setting to define what range of IPs your deployed kubernetes services will serve on.   
 `k8s_admission_control`: 'NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota' - Modify this if you wish to not use one of the default kubernetes admission controllers.   
@@ -94,6 +95,17 @@ For ripping and replacing RHEL cockpit due to dependencies:
         - cockpit-networkmanager
         - cockpit-storaged
         - cockpit-docker
+
+For opening the appropriate firewall ports on the master server (based upon secure or insecure config).  As you'll see, these refer back to what is set in (or over-rided) [`defaults/main.yml`](defaults/main.yml).
+      k8s_firewall_ports_secure:
+        - '{{ etcd_port }}/tcp' #etcd
+        - '{{ k8s_apiserver_secure_port }}/tcp' #kube-apiserver
+        - '{{ k8s_kubelet_port }}/tcp' #kubelet
+
+      k8s_firewall_ports_insecure:
+        - '{{ etcd_port }}/tcp' #etcd
+        - '{{ k8s_apiserver_insecure_port }}/tcp' #kube-apiserver
+        - '{{ k8s_kubelet_port }}/tcp' #kubelet
 
 
 Dependencies

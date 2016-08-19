@@ -7,3 +7,7 @@
 - name: Include appropriate tasks for Insecure Cluster Configuration
   include: tasks/insecure.yml
   when: k8s_secure_master == False
+
+#firewalld
+- name: Include firewalld tasks
+  include: tasks/firewalld.yml
