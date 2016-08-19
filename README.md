@@ -117,11 +117,6 @@ You can access your Cockpit via a web-browser by visiting:  https://<hostname of
 Once you've logged into the Cockpit service, you can click on the "Cluster" tab at the top of the page to view information about your cluster.
 
 
-Dependencies
-------------
-
-N/A
-
 Example Playbooks
 ----------------
 ### Insecured kubernetes master, where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
