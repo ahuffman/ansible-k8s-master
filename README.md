@@ -96,7 +96,7 @@ For ripping and replacing RHEL cockpit due to dependencies:
         - cockpit-storaged
         - cockpit-docker
 
-For opening the appropriate firewall ports on the master server (based upon secure or insecure config).  As you'll see, these refer back to what is set in (or over-rided) [`defaults/main.yml`](defaults/main.yml).
+For opening the appropriate firewall ports on the master server (based upon secure or insecure config).  As you'll see, these refer back to what is set in (or over-rided) [`defaults/main.yml`](defaults/main.yml).   
       k8s_firewall_ports_secure:
         - '{{ etcd_port }}/tcp' #etcd
         - '{{ k8s_apiserver_secure_port }}/tcp' #kube-apiserver
