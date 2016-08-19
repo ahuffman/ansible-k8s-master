@@ -109,6 +109,14 @@ For opening the appropriate firewall ports on the master server (based upon secu
         - '{{ k8s_kubelet_port }}/tcp' #kubelet
 
 
+### Viewing your Kubernetes Cluster in Cockpit
+If you set `k8s_cockpit: true` the Cockpit service and `cockpit-kubernetes` Cockpit plug-in will be installed on your master.   
+
+You can access your Cockpit via a web-browser by visiting:  https://<hostname of master>:9090
+
+Once you've logged into the Cockpit service, you can click on the "Cluster" tab at the top of the page to view information about your cluster.
+
+
 Dependencies
 ------------
 
