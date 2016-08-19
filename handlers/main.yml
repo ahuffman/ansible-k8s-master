@@ -35,6 +35,9 @@
     includepkgs: cockpit-kubernetes cockpit-shell cockpit-bridge cockpit cockpit-ws cockpit-networkmanager cockpit-storaged cockpit-docker
   when: k8s_cockpit == True
 
+- name: Enable Cockpit Service in firewalld
+  firewalld: service=cockpit permanent=true state=enabled zone=public immediate=yes
+  when: k8s_cockpit == True and k8s_firewalld == True
 
 #***************flannel-etcd******************
 - name: Configure flanneld network key in etcd

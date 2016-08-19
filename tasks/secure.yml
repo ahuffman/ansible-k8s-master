@@ -15,6 +15,7 @@
     - Disable CentOS7-Extras Repository post cockpit-kubernetes install 
     - Enable cockpit
     - Restart cockpit
+    - Enable Cockpit Service in firewalld
 
 #***Configure general kubernetes settings
 #config
