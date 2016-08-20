@@ -11,3 +11,4 @@
 #firewalld
 - name: Include firewalld tasks
   include: tasks/firewalld.yml
+  when: k8s_firewalld == True

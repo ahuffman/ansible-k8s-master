@@ -8,7 +8,6 @@ This role can deploy either a SSL Secured kubernetes master (kube-apiserver) or 
 
 If the kubernetes master will also be a cluster member (node/minion), you will want to make use of the [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role.
 
-If you have problems connecting your nodes to your newly deployed kubernetes master, or Cockpit on the master, ensure that you have the appropriate firewall ports opened for all related services.  You may want to consider making use of an Ansible role to manage the firewall ports as required.
 
 ## Role Variables
 
