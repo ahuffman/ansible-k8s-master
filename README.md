@@ -14,10 +14,10 @@ If the kubernetes master will also be a cluster member (node/minion), you will w
 ### Defaults:
 Found in [`defaults/main.yml`](defaults/main.yml)
 #### k8s-master Role settings:
-`k8s_cockpit`: true - Required if you'd like cockpit and the cockpit-kubernetes plugin to be installed
-`k8s_mst_is_node`: false - Change to `true` if you plan on making the master a cluster member (node/minion) as well.  You'll also need to make use of the [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role to properly configure your node.
-`k8s_secure_master`: false - Change to `true` if you'd like to generate certificates and communicate over secured channels.
-`k8s_firewalld`: true - Whether or not to open the required firewall ports with firewalld.  If you're managing your system's firewall ports outside of this role, set to false.
+`k8s_cockpit`: true - Required if you'd like cockpit and the cockpit-kubernetes plugin to be installed   
+`k8s_mst_is_node`: false - Change to `true` if you plan on making the master a cluster member (node/minion) as well.  You'll also need to make use of the [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role to properly configure your node.   
+`k8s_secure_master`: false - Change to `true` if you'd like to generate certificates and communicate over secured channels.   
+`k8s_firewalld`: true - Whether or not to open the required firewall ports with firewalld.  If you're managing your system's firewall ports outside of this role, set to false.   
 
 #### Etcd/flannel Network Settings:
 `etcd_service_url`: http://0.0.0.0 - The URL of your etcd server, minus the port.  By default, this role configures etcd on your kubernetes master so you won't need to change this in most cases.  The port is specified in `etcd_port`.   
