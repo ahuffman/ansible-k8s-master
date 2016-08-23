@@ -123,7 +123,7 @@ Example Playbooks
       vars:
         k8s_etcd_urls: http://192.168.122.20:2379
       roles:
-         - k8s-master
+         - ahuffman.k8s-master
 
 ### Insecured kubernetes master, running a node on the master as well (applied k8s-node role) where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
 
@@ -135,8 +135,8 @@ Example Playbooks
         k8s_master_hostname: kubmst01 #short hostname of master that matches ansible_hostname
         etcd_server_url: http://192.168.122.20
       roles:
-        - k8s-master
-        - k8s-node
+        - ahuffman.k8s-master
+        - ahuffman.k8s-node
 
 ### Secured kubernetes master, where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
 
@@ -155,7 +155,7 @@ Example Playbooks
           - foobar
           - foobar.foobar.org
       roles:
-        - k8s-master
+        - ahuffman.k8s-master
 
 ### Secured kubernetes master, running a secured node on the master as well (applied [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role) where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
 
@@ -179,8 +179,8 @@ Example Playbooks
         k8s_master_hostname: kubmst01 #short hostname of master that matches ansible_hostname
         etcd_server_url: http://192.168.122.20
       roles:
-        - k8s-master
-        - k8s-node
+        - ahuffman.k8s-master
+        - ahuffman.k8s-node
 
 
 License
