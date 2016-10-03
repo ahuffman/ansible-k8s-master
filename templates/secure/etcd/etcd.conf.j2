@@ -27,10 +27,10 @@ ETCD_ADVERTISE_CLIENT_URLS="https://localhost:{{ etcd_port }},https://{{ ansible
 #ETCD_PROXY="off"
 #
 #[security]
-ETCD_CERT_FILE="{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }}"
-ETCD_KEY_FILE="{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }}"
+ETCD_CERT_FILE="{% if k8s_apiserver_cert_path and k8s_apiserver_server_cert_filename %}{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }}"{% endif %}
+ETCD_KEY_FILE="{% if k8s_apiserver_cert_path and k8s_apiserver_server_key_filename %}{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }}{% endif %}"
 ETCD_CLIENT_CERT_AUTH="true"
-ETCD_TRUSTED_CA_FILE="{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}"
+ETCD_TRUSTED_CA_FILE="{% if k8s_apiserver_cert_path and k8s_apiserver_ca_cert_filename %}{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}{% endif %}"
 #ETCD_PEER_CERT_FILE=""
 #ETCD_PEER_KEY_FILE=""
 #ETCD_PEER_CLIENT_CERT_AUTH="false"
