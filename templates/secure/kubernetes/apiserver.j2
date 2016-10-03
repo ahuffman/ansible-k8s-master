@@ -21,11 +21,7 @@ KUBELET_PORT="--kubelet_port={{ k8s_kubelet_port }}"
 {% endif %}
 
 # Comma separated list of nodes in the etcd cluster
-{% if k8s_etcd_urls %}
 KUBE_ETCD_SERVERS="--etcd_servers=https://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }}{% if k8s_apiserver_cert_path and k8s_apiserver_ca_cert_filename %} --etcd-cafile={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_cert_filename %} --etcd-certfile={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }}{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_key_filename %} --etcd-keyfile={{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }}{% endif %}"
-{% else %}
-KUBE_ETCD_SERVERS="--etcd_servers="
-{% endif %}
 
 # Address range to use for services
 {% if k8s_service_network %}
