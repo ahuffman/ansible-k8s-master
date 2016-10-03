@@ -15,7 +15,6 @@ k8s_secure_master: false
 k8s_firewalld: true
 
 #*****etcd/flannel network settings******
-etcd_service_url: http://0.0.0.0
 etcd_port: 2379
 etcd_key: /kube01/network
 flannel_backend_network: 172.16.0.0/12
