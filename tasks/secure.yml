@@ -52,7 +52,7 @@
   register: apiserver_cert_path
 
 - name: Create kube-apiserver certificate path
-  file: path="{{ k8s_apiserver_cert_path }}" state=directory mode=744 group=root owner=kube
+  file: path="{{ k8s_apiserver_cert_path }}" state=directory mode=655 group=root owner=kube
   when: "apiserver_cert_path.stat.exists != True"
 
 #Check presence of apiserver certificates
@@ -132,7 +132,7 @@
     - Restart kube-proxy
 
 - name: Ensure proper permissions on apiserver certificates
-  file: dest="{{  k8s_apiserver_cert_path }}/{{ item }}" mode=440 owner=kube group=root state=file
+  file: dest="{{  k8s_apiserver_cert_path }}/{{ item }}" mode=655 owner=kube group=root state=file
   with_items:
     - '{{ k8s_apiserver_ca_key_filename }}'
     - '{{ k8s_apiserver_ca_cert_filename }}'
@@ -197,7 +197,7 @@
 #***Setup flanneld backend network
 #check etcd key
 - name: Check to see if flanneld network config exists in etcd
-  command: etcdctl ls '{{ etcd_key }}'/config
+  command: etcdctl --cert-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} --key-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} --ca-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} ls '{{ etcd_key }}'/config
   register: etcdctl_result
   changed_when: "etcdctl_result.rc != 0"
   ignore_errors: yes
