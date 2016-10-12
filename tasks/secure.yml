@@ -92,7 +92,7 @@
     - Restart kube-proxy
 
 - name: Generate kube-apiserver CA certificate
-  shell: openssl req -x509 -new -nodes -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -subj "/CN={{ ansible_hostname }}" -days 10000 -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -config {{ k8s_apiserver_cert_path }}/openssl.conf
+  shell: openssl req -x509 -new -nodes -key {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }} -subj "/CN='{{ ansible_hostname }}'" -days 10000 -out {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} -config {{ k8s_apiserver_cert_path }}/openssl.conf
   when: "apiserver_ca_cert.stat.exists != True"
   notify:
     - Fetch kube-apiserver Certificates and keys
@@ -197,7 +197,7 @@
 #***Setup flanneld backend network
 #check etcd key
 - name: Check to see if flanneld network config exists in etcd
-  command: etcdctl --cert-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} --key-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} --ca-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} --endpoint=https://{{ ansible_hostname }}.{{ ansible_domain }} ls '{{ etcd_key }}'/config
+  command: etcdctl --cert-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} --key-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} --ca-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} --endpoint=https://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }} ls '{{ etcd_key }}'/config
   register: etcdctl_result
   changed_when: "etcdctl_result.rc != 0"
   ignore_errors: yes
