@@ -146,6 +146,15 @@
     - Restart flanneld
     - Restart kube-proxy
 
+#Update CA Trust
+- name: Copy CA Certificate to Trusted Sources
+  shell: cp {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} /etc/pki/ca-trust/source/anchors/{{ k8s_apiserver_ca_cert_filename }}
+  when: "apiserver_ca_cert.stat.exists != True"
+
+- name: Update CA Trust
+  shell: update-ca-trust extract
+  when: "apiserver_ca_cert.stat.exists != True"
+
 #***Configure kubernetes components with kubeconfigs
 #proxy
 - name: Configure kube-proxy with secure kubeconfig
