@@ -39,19 +39,6 @@
   firewalld: service=cockpit permanent=true state=enabled zone=public immediate=yes
   when: k8s_cockpit == True and k8s_firewalld == True
 
-#***************flannel-etcd******************
-- name: Configure flanneld network key in etcd
-  command: /usr/bin/curl -L http://'{{ ansible_hostname }}'.'{{ ansible_domain }}':'{{ etcd_port }}'/v2/keys'{{ etcd_key }}'/config -XPUT --data-urlencode value@flanneld-conf.json
-  args:
-    chdir: /etc/kubernetes/
-  when: "etcdctl_result.rc == 4"
-
-- name: Configure flanneld network key in etcd-secure
-  command: /usr/bin/curl -L https://'{{ ansible_hostname }}'.'{{ ansible_domain }}:'{{ etcd_port }}'/v2/keys'{{ etcd_key }}'/config -XPUT --data-urlencode value@flanneld-conf.json
-  args:
-    chdir: /etc/kubernetes/
-  when: "etcdctl_result.rc == 4"
-
 
 #*****************Services*********************
 #Service Restarts

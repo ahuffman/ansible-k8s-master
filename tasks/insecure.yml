@@ -79,17 +79,17 @@
 - name: Check to see if flanneld network config exists in etcd
   command: /usr/bin/etcdctl ls '{{ etcd_key }}'/config
   register: etcdctl_result
-  changed_when: "etcdctl_result.rc != 0"
-  ignore_errors: yes
-  notify:
-    - Configure flanneld network key in etcd
-    - Restart etcd
+  changed_when: False
+  ignore_errors: True
 
 - name: Move flanneld network config to master
   template: src=insecure/flannel/flanneld-conf.json.j2 dest=/etc/kubernetes/flanneld-conf.json
-  notify: 
-    - Configure flanneld network key in etcd
-    - Restart etcd
+  when: etcdctl_result|failed
+
+- name: Configure flanneld network key in etcd
+  command: etcdctl --endpoint http://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }} set {{ etcd_key }}/config < /etc/kubernetes/flanneld-conf.json
+  when: etcdctl_result|failed
+  notify: Restart flanneld
 
 #***Remaining Configuration
 #Configure local flannel settings
