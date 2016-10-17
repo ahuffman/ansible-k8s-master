@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+# Edit this file to override any configuration options specified in
+# /usr/lib/docker-storage-setup/docker-storage-setup.
+#
+# For more details refer to "man docker-storage-setup"
+DEVS={{ k8s_docker_storage_disk }}
+VG={{ k8s_docker_storage_vg }}
+{% for i in k8s_docker_storage_options %}
+{{ i }}
+{% endfor %}

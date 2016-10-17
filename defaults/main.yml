@@ -14,6 +14,9 @@ k8s_secure_master: false
 #Open firewall ports with firewalld?
 k8s_firewalld: true
 
+#Configure docker storage?
+k8s_docker_storage_setup: false
+
 #*****etcd/flannel network settings******
 etcd_port: 2379
 etcd_key: /kube01/network
@@ -43,6 +46,12 @@ k8s_allow_privileged: false
 k8s_log_level: 0
 k8s_logtostderr: true
 
+#*****docker-storage-setup options
+k8s_docker_storage_disk: ''
+k8s_docker_storage_vg: vg_docker
+k8s_docker_storage_options:
+  - AUTO_EXTEND_POOL=true
+  - POOL_AUTOEXTEND_THRESHOLD=80
 
 #*****Variables that apply to a secure kubernetes cluster*****
 k8s_apiserver_secure_port: '6443'
