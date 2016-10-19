@@ -9,5 +9,5 @@ FLANNEL_ETCD="https://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }
 FLANNEL_ETCD_KEY="{{ etcd_key }}"
 
 # Any additional options that you want to pass
-FLANNEL_OPTIONS="{% if k8s_apiserver_cert_path and k8s_apiserver_ca_cert_filename %}--etcd-cafile="{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}"{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_cert_filename %} --etcd-certfile="{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }}"{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_key_filename %} --etcd-keyfile="{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }}"{% endif %}"
+FLANNEL_OPTIONS="{% if k8s_apiserver_cert_path and k8s_apiserver_ca_cert_filename %}-etcd-cafile="{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}"{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_cert_filename %} -etcd-certfile="{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }}"{% endif %}{% if k8s_apiserver_cert_path and k8s_apiserver_server_key_filename %} -etcd-keyfile="{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }}"{% endif %}"
 
