@@ -17,6 +17,14 @@
     - Restart cockpit
     - Enable Cockpit Service in firewalld
 
+#Configure Docker Storage
+- name: Configure Docker Storage
+  template: src=secure/sysconfig/docker-storage-setup.j2 dest=/etc/sysconfig/docker-storage-setup
+  when:
+    - k8s_mst_is_node == False
+    - k8s_docker_storage_setup == True
+  notify: Restart flanneld
+
 #****Configure general kubernetes settings
 #config
 - name: Configure etcd settings
@@ -84,12 +92,22 @@
 
 - name: Move flanneld network config to master
   template: src=insecure/flannel/flanneld-conf.json.j2 dest=/etc/kubernetes/flanneld-conf.json
-  when: etcdctl_result|failed
 
 - name: Configure flanneld network key in etcd
-  command: etcdctl --endpoint http://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }} set {{ etcd_key }}/config < /etc/kubernetes/flanneld-conf.json
+  shell: etcdctl --endpoint http://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }} set {{ etcd_key }}/config </etc/kubernetes/flanneld-conf.json
   when: etcdctl_result|failed
   notify: Restart flanneld
+
+- name: Output flanneld network key for verification
+  shell: etcdctl --endpoint=http://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }} get '{{ etcd_key }}'/config > /etc/kubernetes/etcdctl-out.txt
+  register: flannel_diff
+  changed_when: False
+  failed_when: "flannel_diff.rc != 0"
+
+- name: Verify flanneld network key
+  shell: diff /etc/kubernetes/etcdctl-out.txt /etc/kubernete
+s/flanneld-conf.json
+  changed_when: False
 
 #***Remaining Configuration
 #Configure local flannel settings

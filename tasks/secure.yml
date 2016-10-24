@@ -17,6 +17,14 @@
     - Restart cockpit
     - Enable Cockpit Service in firewalld
 
+#Configure Docker Storage
+- name: Configure Docker Storage
+  template: src=secure/sysconfig/docker-storage-setup.j2 dest=/etc/sysconfig/docker-storage-setup
+  when:
+    - k8s_mst_is_node == False
+    - k8s_docker_storage_setup == True
+  notify:  Restart flanneld
+
 #***Configure general kubernetes settings
 #config
 - name: Configure etcd settings
@@ -52,8 +60,7 @@
   register: apiserver_cert_path
 
 - name: Create kube-apiserver certificate path
-  file: path="{{ k8s_apiserver_cert_path }}" state=directory mode=655 group=root owner=kube
-  when: "apiserver_cert_path.stat.exists != True"
+  file: path="{{ k8s_apiserver_cert_path }}" state=directory mode=655 group=root owner=root
 
 #Check presence of apiserver certificates
 - name: Check for presence of kube-apiserver CA key
@@ -132,9 +139,9 @@
     - Restart kube-proxy
 
 - name: Ensure proper permissions on apiserver certificates
-  file: dest="{{  k8s_apiserver_cert_path }}/{{ item }}" mode=655 owner=kube group=root state=file
+  file: dest="{{  k8s_apiserver_cert_path }}/{{ item }}" mode=644 owner=root group=root state=file
   with_items:
-    - '{{ k8s_apiserver_ca_key_filename }}'
+#    - '{{ k8s_apiserver_ca_key_filename }}'
     - '{{ k8s_apiserver_ca_cert_filename }}'
     - '{{ k8s_apiserver_server_key_filename }}'
     - '{{ k8s_apiserver_server_csr_filename }}'
@@ -146,6 +153,10 @@
     - Restart flanneld
     - Restart kube-proxy
 
+- name: Ensure proper permissions on CA key
+  file: dest="{{  k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }}" mode=600 owner=root group=root state=file
+
+
 #Update CA Trust
 - name: Copy CA Certificate to Trusted Sources
   shell: cp {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} /etc/pki/ca-trust/source/anchors/{{ k8s_apiserver_ca_cert_filename }}
@@ -153,6 +164,10 @@
 
 - name: Update CA Trust
   shell: update-ca-trust extract
+  when: "apiserver_ca_cert.stat.exists != True"
+
+- name: Restart etcd for kube-apiserver CA change
+  service: name=etcd state=restarted
   when: "apiserver_ca_cert.stat.exists != True"
 
 #***Configure kubernetes components with kubeconfigs
@@ -208,17 +223,27 @@
 - name: Check to see if flanneld network config exists in etcd
   command: etcdctl --cert-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} --key-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} --ca-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} --endpoint=https://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }} ls '{{ etcd_key }}'/config
   register: etcdctl_result
-  changed_when: "etcdctl_result.rc != 0"
-  ignore_errors: yes
-  notify:
-    - Configure flanneld network key in etcd
-    - Restart etcd
+  changed_when: False
+  ignore_errors: True
 
 - name: Move flanneld network config to master
   template: src=secure/flannel/flanneld-conf.json.j2 dest=/etc/kubernetes/flanneld-conf.json
-  notify: 
-    - Configure flanneld network key in etcd
-    - Restart etcd
+
+- name: Configure flanneld network key in etcd secure
+  shell: etcdctl --cert-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} --key-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} --ca-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} --endpoint=https://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }} set {{ etcd_key }}/config </etc/kubernetes/flanneld-conf.json
+  when: etcdctl_result|failed
+  notify: Restart flanneld
+
+
+- name: Output flanneld network key for verification
+  shell: etcdctl --cert-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_cert_filename }} --key-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_server_key_filename }} --ca-file {{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }} --endpoint=https://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }} get '{{ etcd_key }}'/config > /etc/kubernetes/etcdctl-out.txt
+  changed_when: False
+
+- name: Verify flanneld network key
+  shell: diff /etc/kubernetes/etcdctl-out.txt /etc/kubernetes/flanneld-conf.json
+  register: flannel_diff
+  changed_when: False
+  failed_when: "flannel_diff.rc != 0"
 
 #***Remaining Configuration
 #Configure local flannel settings
