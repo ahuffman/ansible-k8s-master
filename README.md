@@ -17,10 +17,11 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 `k8s_cockpit`: true - Required if you'd like cockpit and the cockpit-kubernetes plugin to be installed   
 `k8s_mst_is_node`: false - Change to `true` if you plan on making the master a cluster member (node/minion) as well.  You'll also need to make use of the [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role to properly configure your node.   
 `k8s_secure_master`: false - Change to `true` if you'd like to generate certificates and communicate over secured channels.   
-`k8s_firewalld`: true - Whether or not to open the required firewall ports with firewalld.  If you're managing your system's firewall ports outside of this role, set to false.   
+`k8s_firewalld`: true - Whether or not to open the required firewall ports with firewalld.  If you're managing your system's firewall ports outside of this role, set to false.  
+`k8s_docker_storage_setup`: false - Whether or not to configure docker's container storage pool.  See settings below.   
+ 
 
 #### Etcd/flannel Network Settings:
-`etcd_service_url`: http://0.0.0.0 - The URL of your etcd server, minus the port.  By default, this role configures etcd on your kubernetes master so you won't need to change this in most cases.  The port is specified in `etcd_port`.   
 `etcd_port`: 2379 - The port of your etcd server.  As mentioned above, you most likely won't need to change this setting.   
 `etcd_key`: /kube01/network - The key where your cluster's network settings will be stored in etcd.  Change as needed per cluster.   
 `flannel_backend_network`: 172.16.0.0/12 - The network for backend pod/kube-proxy communications.   
@@ -28,7 +29,6 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 
 #### Kube-apiserver Settings:
 `k8s_kubelet_port`: '10250' - The port on which kubernetes kubelets are expected to communicate with the apiserver.   
-`k8s_etcd_urls`: 'http://kubernetes.local:2379'  - Modify this setting with your host's DNS name/IP as required.   
 `k8s_service_network`: 192.168.22.0/24 - Modify this setting to define what range of IPs your deployed kubernetes services will serve on.   
 `k8s_admission_control`: 'NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota' - Modify this if you wish to not use one of the default kubernetes admission controllers.   
 
@@ -46,6 +46,14 @@ Found in [`defaults/main.yml`](defaults/main.yml)
 `k8s_allow_privileged`: false - Whether or not to allow the execution of privileged containers.   
 `k8s_log_level`: 0 - The verbosity of kubernetes logs.   
 `k8s_logtostderr`: true - Whether or not to log to standard error.   
+
+#### Docker storage setup options   
+`k8s_docker_storage_disk`: '' - Used with the k8s_docker_storage_setup option above.  Provide an unformatted device such as '/dev/sdb'.  This assumes it is a clean server deployment.  If you've already started the docker engine, then you'll have to cleanup the default storage pool.   
+`k8s_docker_storage_vg`: vg_docker - The volume group to use/create for docker storage.   
+       `k8s_docker_storage_options`:    
+         - AUTO_EXTEND_POOL = true   
+         - POOL_AUTOEXTEND_THRESHOLD   
+See 'man docker-storage-setup` for all available options.  You can add whichever best suit your environment, but the defaults here should work well for you.   
 
 #### Secure kube-apiserver Settings: - only applies if `k8s_secure_master: true`.
 `k8s_apiserver_secure_port`: 6443 - Port to server kube-apiserver secured communications.   
