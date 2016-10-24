@@ -19,7 +19,7 @@
 
 #Configure Docker Storage
 - name: Configure Docker Storage
-  template: src=secure/sysconfig/docker-storage-setup.j2 dest=/etc/sysconfig/docker-storage-setup
+  template: src=insecure/sysconfig/docker-storage-setup.j2 dest=/etc/sysconfig/docker-storage-setup
   when:
     - k8s_mst_is_node == False
     - k8s_docker_storage_setup == True
