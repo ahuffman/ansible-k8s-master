@@ -105,7 +105,7 @@
   failed_when: "flannel_diff.rc != 0"
 
 - name: Verify flanneld network key
-  shell: diff /etc/kubernetes/etcdctl-out.txt /etc/kubernete
+  shell: sed -i '$ d' /etc/kubernetes/etcdctl-out.txt && diff /etc/kubernetes/etcdctl-out.txt /etc/kubernete
 s/flanneld-conf.json
   changed_when: False
 
