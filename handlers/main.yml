@@ -67,6 +67,8 @@
   service: name=cockpit state=restarted
   when: k8s_cockpit == True
 
+- name: Restart etcd
+  service: name=etcd state=restarted
 #******************CA*************************
 #Retrieve apiserver certificates
 - name: Fetch kube-apiserver Certificates and keys
