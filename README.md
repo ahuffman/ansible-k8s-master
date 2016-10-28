@@ -128,8 +128,6 @@ Example Playbooks
 ### Insecured kubernetes master, where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
 
     - hosts: kubernetes_master
-      vars:
-        k8s_etcd_urls: http://192.168.122.20:2379
       roles:
          - ahuffman.k8s-master
 
@@ -138,20 +136,18 @@ Example Playbooks
     - hosts: kubernetes_master
       vars:
         k8s_mst_is_node: true
-        k8s_etcd_urls: http://192.168.122.20:2379
-        #node settings
-        k8s_master_hostname: kubmst01 #short hostname of master that matches ansible_hostname
-        etcd_server_url: http://192.168.122.20
+        k8s_docker_storage_setup: true
+        k8s_docker_storage_disk: /dev/sdb
+        k8s_master_fqdn: kubmst01.foobar.com 
       roles:
         - ahuffman.k8s-master
         - ahuffman.k8s-node
 
-### Secured kubernetes master, where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
+### Secured kubernetes master
 
     - hosts: kubernetes_master
       vars:
         k8s_secure_master: true
-        k8s_etcd_urls: http://192.168.122.20:2379
         k8s_apiserver_dns_names:
           - kubernetes
           - kubernetes.default
@@ -165,13 +161,12 @@ Example Playbooks
       roles:
         - ahuffman.k8s-master
 
-### Secured kubernetes master, running a secured node on the master as well (applied [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role) where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
+### Secured kubernetes master, running a secured node on the master as well (applied [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role) 
 
     - hosts: kubernetes_master
       vars:
         k8s_secure_master: true
         k8s_mst_is_node: true
-        k8s_etcd_urls: http://192.168.122.20:2379
         k8s_apiserver_dns_names:
           - kubernetes
           - kubernetes.default
@@ -184,8 +179,9 @@ Example Playbooks
           - foobar.foobar.org
         #k8s-node settings see k8s-node - https://galaxy.ansible.com/ahuffman/k8s-node/ for more details on settings
         k8s_secure_node: true
-        k8s_master_hostname: kubmst01 #short hostname of master that matches ansible_hostname
-        etcd_server_url: http://192.168.122.20
+        k8s_docker_storage_setup: true
+        k8s_docker_storage_disk: /dev/sdb
+        k8s_master_fqdn: kubmst01.foobar.com
       roles:
         - ahuffman.k8s-master
         - ahuffman.k8s-node
