@@ -1,7 +1,6 @@
 ---
 
 k8s_mst_packages:
-  - curl
   - etcd
   - kubernetes-master
   - kubernetes-node
