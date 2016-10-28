@@ -137,11 +137,15 @@ Example Playbooks
     - hosts: kubernetes_master
       vars:
         k8s_mst_is_node: true
-        k8s_docker_storage_setup: true
-        k8s_docker_storage_disk: /dev/sdb
-        k8s_master_fqdn: kubmst01.foobar.com 
       roles:
         - ahuffman.k8s-master
+    
+    - hosts: kubernetes_master
+      vars:
+        k8s_docker_storage_setup: true
+        k8s_docker_storage_disk: /dev/sdb
+        k8s_master_fqdn: kubmst01.foobar.com
+      roles:
         - ahuffman.k8s-node
 
 ### Secured kubernetes master
@@ -178,13 +182,17 @@ Example Playbooks
           - foobar01.foobar.org
           - foobar
           - foobar.foobar.org
+      roles:
+        - ahuffman.k8s-master
+
+    - hosts: kubernetes_master
+      vars:
         #k8s-node settings see k8s-node - https://galaxy.ansible.com/ahuffman/k8s-node/ for more details on settings
         k8s_secure_node: true
         k8s_docker_storage_setup: true
         k8s_docker_storage_disk: /dev/sdb
         k8s_master_fqdn: kubmst01.foobar.com
       roles:
-        - ahuffman.k8s-master
         - ahuffman.k8s-node
 
 
