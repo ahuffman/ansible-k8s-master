@@ -21,7 +21,7 @@ KUBELET_PORT="--kubelet_port={{ k8s_kubelet_port }}"
 {% endif %}
 
 # Comma separated list of nodes in the etcd cluster
-KUBE_ETCD_SERVERS="--etcd_servers=http://{{ k8s_master_fqdn }}:{{ etcd_port }}"
+KUBE_ETCD_SERVERS="--etcd_servers=http://{{ ansible_hostname }}.{{ ansible_domain }}:{{ etcd_port }}"
 
 # Address range to use for services
 KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range={{ k8s_service_network }}"
