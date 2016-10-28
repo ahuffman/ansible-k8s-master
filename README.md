@@ -125,13 +125,13 @@ Once you've logged into the Cockpit service, you can click on the "Cluster" tab 
 
 Example Playbooks
 ----------------
-### Insecured kubernetes master, where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
+### Insecured kubernetes master
 
     - hosts: kubernetes_master
       roles:
          - ahuffman.k8s-master
 
-### Insecured kubernetes master, running a node on the master as well (applied k8s-node role) where 192.168.122.20 is the IP address of the etcd server (and in this case the kubernetes master).
+### Insecured kubernetes master, running a node on the master as well (applied [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role)
 
     - hosts: kubernetes_master
       vars:
