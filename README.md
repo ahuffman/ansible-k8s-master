@@ -6,7 +6,8 @@ This role can deploy either a SSL Secured kubernetes master (kube-apiserver) or 
 
 ## Requirements
 
-If the kubernetes master will also be a cluster member (node/minion), you will want to make use of the [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role.
+If the kubernetes master will also be a cluster member (node/minion), you will want to make use of the [`k8s-node`](https://galaxy.ansible.com/ahuffman/k8s-node/) role.   
+It is critical that you properly set the hostname and domain of the kubernetes master properly.  You may want to use the [`ahuffman.hosts`](https://galaxy.ansible.com/ahuffman/hosts/) role, or an alternative to accomplish this.
 
 
 ## Role Variables
