@@ -81,7 +81,6 @@ See 'man docker-storage-setup` for all available options.  You can add whichever
 Found in [`vars/main.yml`](vars/main.yml)
 
      k8s_mst_packages:
-       - curl
        - etcd
        - kubernetes-master
        - kubernetes-node
