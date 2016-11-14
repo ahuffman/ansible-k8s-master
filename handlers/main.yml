@@ -82,9 +82,9 @@
   register: ssl_ca_cert
 
 - name: Store CA key
-  shell: echo "{{ ssl_ca_key.content | b64decode }}" > files/k8s-mst-certs/{{ ansible_hostname }}.{{ ansible_domain }}/{{ k8s_apiserver_ca_key_filename }}
+  shell: echo "{{ ssl_ca_key.content | b64decode }}" > files/k8s-master-certs/{{ ansible_hostname }}.{{ ansible_domain }}/{{ k8s_apiserver_ca_key_filename }}
   delegate_to: localhost
 
 - name: Store CA cert
-  shell: echo "{{ ssl_ca_cert.content | b64decode }}" > files/k8s-mst-certs/{{ ansible_hostname }}.{{ ansible_domain }}/{{ k8s_apiserver_ca_cert_filename }}
+  shell: echo "{{ ssl_ca_cert.content | b64decode }}" > files/k8s-master-certs/{{ ansible_hostname }}.{{ ansible_domain }}/{{ k8s_apiserver_ca_cert_filename }}
   delegate_to: localhost
