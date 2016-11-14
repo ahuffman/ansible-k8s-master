@@ -71,8 +71,20 @@
   service: name=etcd state=restarted
 #******************CA*************************
 #Retrieve apiserver certificates
-- name: Fetch kube-apiserver Certificates and keys
-  fetch: src="{{ k8s_apiserver_cert_path }}"/"{{ item }}"  dest=files/k8s-master-certs/"{{ ansible_hostname }}"."{{ ansible_domain }}"/ validate_checksum=yes flat=yes
-  with_items:
-    - "{{ k8s_apiserver_ca_key_filename }}"
-    - "{{ k8s_apiserver_ca_cert_filename }}"
+- name: Get CA key
+  slurp:
+    src: "{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_key_filename }}"
+  register: ssl_ca_key
+
+- name: Get CA cert
+  slurp:
+    src: "{{ k8s_apiserver_cert_path }}/{{ k8s_apiserver_ca_cert_filename }}"
+  register: ssl_ca_cert
+
+- name: Store CA key
+  shell: echo "{{ ssl_ca_key.content | b64decode }}" > files/k8s-mst-certs/{{ ansible_hostname }}.{{ ansible_domain }}/{{ k8s_apiserver_ca_key_filename }}
+  delegate_to: localhost
+
+- name: Store CA cert
+  shell: echo "{{ ssl_ca_cert.content | b64decode }}" > files/k8s-mst-certs/{{ ansible_hostname }}.{{ ansible_domain }}/{{ k8s_apiserver_ca_cert_filename }}
+  delegate_to: localhost
