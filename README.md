@@ -1,3 +1,5 @@
+![Ansible Role](https://img.shields.io/ansible/role/d/9306)
+
 # ahuffman.k8s-master
 
 An ansible role to configure a kubernetes master on a Red Hat Enterprise Linux based system.
